@@ -94,81 +94,82 @@
     /* ---- lifecycle clock ---- */
     {
       id: 'which-moves-the-race', title: 'What moves the race?', blurb: 'Predict first: n-days sooner, installation faster, or a longer time to use the exploit?', level: 'warm-up', tab: 'lifecycle',
-      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nSpeed', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'], kind: 'predict',
-      prompt: 'Today the attacker is first in about 72 % of the cases in which an exploit exists (the race frame): zero-days 25 %, n-days with the Mandiant timing, installation after a median of 43 days, <i>&tau;</i> a median of 1 day.',
+      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nMed', 'life.nSigma', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'], kind: 'predict',
+      prompt: 'Today the attacker is first in about 72 % of the cases in which an exploit exists (the race frame): zero-days 25 %, n-days a median of 25 days after the patch, installation after a median of 43 days, <i>&tau;</i> a median of 1 day.',
       question: 'Which single change moves that chance the most?',
       options: ['The n-day exploits arrive 5 times sooner (AI patch diffing)', 'Installation is twice as fast', 'The time <i>&tau;</i> to use the exploit is 3 times longer', 'All three move it about the same'],
-      answer(S, CR) { const P = CR.life.fromFlat(S.life), p0 = CR.life.prob(P, 120).p, d = [{ s: P.s * 5 }, { i: { med: P.i.med / 2 } }, { tauMed: P.tauMed * 3 }].map(ch => Math.abs(CR.life.prob(CR.life.with(P, ch), 120).p - p0));
+      answer(S, CR) { const P = CR.life.fromFlat(S.life), p0 = CR.life.prob(P, 120).p, d = [{ nMed: P.nMed / 5 }, { i: { med: P.i.med / 2 } }, { tauMed: P.tauMed * 3 }].map(ch => Math.abs(CR.life.prob(CR.life.with(P, ch), 120).p - p0));
         return d.indexOf(Math.max(...d)); },
-      reveal: { 'life.nSpeed': 5 },
-      explain(S, CR) { const P0 = CR.life.fromFlat(Object.assign({}, S.life, { nSpeed: 1 })), p0 = CR.life.prob(P0, 120).p, f = ch => CR.life.prob(CR.life.with(P0, ch), 120).p;
-        const a = f({ s: 5 }), b = f({ i: { med: P0.i.med / 2 } }), c = f({ tauMed: P0.tauMed * 3 });
+      reveal: { 'life.nMed': 5 },
+      explain(S, CR) { const P0 = CR.life.fromFlat(Object.assign({}, S.life, { nMed: CR.life.DEFAULT.nMed })), p0 = CR.life.prob(P0, 120).p, f = ch => CR.life.prob(CR.life.with(P0, ch), 120).p;
+        const a = f({ nMed: P0.nMed / 5 }), b = f({ i: { med: P0.i.med / 2 } }), c = f({ tauMed: P0.tauMed * 3 });
         return 'From <b>' + pct(p0) + '</b>: n-days 5 times sooner gives <b>' + pct(a) + '</b>, installation twice as fast <b>' + pct(b) + '</b>, <i>&tau;</i> three times longer <b>' + pct(c) + '</b>. ' +
                'The race is between <i>X</i> and <i>I</i>: the time to use the exploit is short next to the window, so it hardly matters. See the bars at the bottom of the tab.'; },
       check() { return { ok: true, msg: '' }; }
     },
     {
-      id: 'ai-diffing', title: 'How much sooner must n-days arrive?', blurb: 'AI patch diffing: find the speed factor that puts the attacker first in 85 % of the cases.', level: 'core', tab: 'lifecycle',
-      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'],
-      prompt: 'AI patch diffing makes every n-day exploit arrive sooner. Change <b>only the n-day speed factor</b> so that the attacker is first in at least <b>85 %</b> of the cases (today: 72 %).',
-      hint: 'The factor divides every n-day time. Watch how the filled dots grow to the right of day 0, and compare with the zero-day share of 25 %.',
+      id: 'ai-diffing', title: 'How much sooner must n-days arrive?', blurb: 'AI patch diffing: find the n-day median that puts the attacker first in 85 % of the cases.', level: 'core', tab: 'lifecycle',
+      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nSigma', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'],
+      prompt: 'AI patch diffing makes every n-day exploit arrive sooner. Change <b>only the median of the n-days</b> (today 25 days after the patch) so that the attacker is first in at least <b>85 %</b> of the cases (today: 72 %).',
+      hint: 'A smaller median moves every n-day sooner. Watch how the filled dots grow to the right of day 0, and compare with the zero-day share of 25 %.',
       check(S, CR) { const p = CR.life.prob(CR.life.fromFlat(S.life)).p;
-        return { ok: p >= 0.85, msg: 'The attacker is first in ' + pct(p) + (p >= 0.85 ? ' with the n-days ' + num(S.life.nSpeed) + ' times sooner.' : ': below 85 %.') }; },
-      solution(S, CR) { const s = CR.life.solveSpeed(CR.life.fromFlat(S.life), 0.85);
-        return { text: 'A factor of about <b>' + num(s) + '</b>: a little more than twice as fast brings the attacker from 72 % to 85 %. The n-days that were slow, weeks after the patch, are the ones that move into the window.', apply: { 'life.nSpeed': s } }; }
+        return { ok: p >= 0.85, msg: 'The attacker is first in ' + pct(p) + (p >= 0.85 ? ' with an n-day median of ' + num(S.life.nMed) + ' days, ' + num(CR.life.DEFAULT.nMed / S.life.nMed) + ' times sooner than today.' : ': below 85 %.') }; },
+      solution(S, CR) { const m = CR.life.solveN(CR.life.fromFlat(S.life), 0.85), d = CR.life.DEFAULT.nMed;
+        return { text: 'A median of about <b>' + num(m) + ' days</b> instead of ' + d + ', <b>' + num(d / m) + ' times sooner</b>: this brings the attacker from 72 % to 85 %. The n-days that were slow, weeks after the patch, are the ones that move into the window.', apply: { 'life.nMed': m } }; }
     },
     {
       id: 'keep-up', title: 'Keep up with AI patch diffing', blurb: 'The n-days arrive 5 times sooner: how much faster must installation be to hold today\'s 72 %?', level: 'core', tab: 'lifecycle',
-      setup: { life: { nSpeed: 5 } }, locked: ['life.zdShare', 'life.zdMed', 'life.nSpeed', 'life.tauMed', 'life.iSigma', 'life.shape', 'life.base'],
-      prompt: 'N-day exploits arrive 5 times sooner (the attacker is first in 93 %). Change <b>only the median installation time</b> so that the attacker is first in at most <b>73 %</b> of the cases, as today.',
+      setup: { life: { nMed: 5 } }, locked: ['life.zdShare', 'life.zdMed', 'life.nMed', 'life.nSigma', 'life.tauMed', 'life.iSigma', 'life.shape', 'life.base'],
+      prompt: 'N-day exploits arrive 5 times sooner, a median of 5 days after the patch (the attacker is first in 93 %). Change <b>only the median installation time</b> so that the attacker is first in at most <b>73 %</b> of the cases, as today.',
       hint: 'The window is I &minus; X. When X moves towards 0 the window grows by the same amount, so the installation clock has to shrink by more than the speed-up looks like.',
       check(S, CR) { const p = CR.life.prob(CR.life.fromFlat(S.life)).p;
         return { ok: p <= 0.73, msg: 'The attacker is first in ' + pct(p) + (p <= 0.73 ? ' with an installation median of ' + num(S.life.iMed) + ' days.' : ': still above 73 %.') }; },
       solution(S, CR) { const m = CR.life.solveI(CR.life.fromFlat(S.life), 0.73);
-        return { text: 'About <b>' + num(m) + ' days</b> instead of 43, <b>' + num(43 / m) + ' times faster</b>: the defender has to move about as much as the attacker did. That is the pressure on installation that more patches and faster exploits put together.', apply: { 'life.iMed': m } }; }
+        return { text: 'About <b>' + num(m) + ' days</b> instead of 43, <b>' + num(43 / m) + ' times faster</b>: the n-days became 5 times sooner, and the defender has to become almost as many times faster just to stand still. That is the pressure on installation that more patches and faster exploits put together.', apply: { 'life.iMed': m } }; }
     },
     {
       id: 'tau-late', title: 'When does the time to use the exploit matter?', blurb: 'Find the median time τ that brings the attacker down to 60 %.', level: 'core', tab: 'lifecycle',
-      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nSpeed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'],
+      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nMed', 'life.nSigma', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'],
       prompt: 'Inside the window the margin of resources over resistance is wide and <i>&tau;</i> is short. Change <b>only the median <i>&tau;</i></b> so that the attacker is first in at most <b>60 %</b> of the cases (today: 72 %).',
       hint: 'Compare <i>&tau;</i> with the window: the median installation time is 43 days. A control that works, or a target that is hard, makes <i>&tau;</i> long.',
       check(S, CR) { const p = CR.life.prob(CR.life.fromFlat(S.life)).p;
         return { ok: p <= 0.6, msg: 'The attacker is first in ' + pct(p) + (p <= 0.6 ? ' with <i>&tau;</i> = ' + num(S.life.tauMed) + ' days.' : ': still above 60 %.') }; },
       solution(S, CR) { const t = CR.life.solveTau(CR.life.fromFlat(S.life), 0.6);
-        return { text: 'About <b>' + num(t) + ' days</b>, a third of the installation median: <i>&tau;</i> matters only when it is long, which is where a working control (tab 2) puts the adversary.', apply: { 'life.tauMed': t } }; }
+        return { text: 'About <b>' + num(t) + ' days</b>, ' + Math.round(100 * t / S.life.iMed) + ' % of the installation median: <i>&tau;</i> matters only when it is long, which is where a working control (tab 2) puts the adversary.', apply: { 'life.tauMed': t } }; }
     },
     {
       id: 'zero-day-share', title: 'More zero-days', blurb: 'How large must the zero-day share be for the attacker to be first in 90 % of the cases?', level: 'core', tab: 'lifecycle',
-      setup: {}, locked: ['life.zdMed', 'life.nSpeed', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'],
+      setup: {}, locked: ['life.zdMed', 'life.nMed', 'life.nSigma', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'],
       prompt: 'AI-assisted discovery could put more exploits before the patch. Change <b>only the zero-day share</b> so that the attacker is first in at least <b>90 %</b> of the cases (today: a share of 25 % gives 72 %).',
       hint: 'A zero-day has a window longer than the installation time, so nearly every zero-day case is a case for the attacker. The rest of the cases are n-days.',
       check(S, CR) { const p = CR.life.prob(CR.life.fromFlat(S.life)).p;
         return { ok: p >= 0.9, msg: 'The attacker is first in ' + pct(p) + (p >= 0.9 ? ' with a zero-day share of ' + pct(S.life.zdShare) + '.' : ': below 90 %.') }; },
-      solution(S, CR) { const w = CR.life.solveW0(CR.life.fromFlat(S.life), 0.9);
-        return { text: 'About <b>' + pct(w) + '</b>: nearly three in four cases would have to be zero-days. The attacker is first in a zero-day case almost always and in about 64 % of the n-day cases, so the share moves the result linearly between those two.', apply: { 'life.zdShare': w } }; }
+      solution(S, CR) { const P = CR.life.fromFlat(S.life), w = CR.life.solveW0(P, 0.9), pn = CR.life.prob(CR.life.with(P, { w0: 0 })).p;
+        return { text: 'About <b>' + pct(w) + '</b> of the cases would have to be zero-days. The attacker is first in a zero-day case almost always and in ' + pct(pn) + ' of the n-day cases, so the share moves the result linearly between those two.', apply: { 'life.zdShare': w } }; }
     },
     {
       id: 'base-rate', title: 'The base rate', blurb: 'Predict first: how many of 10 000 disclosed vulnerabilities see an attacker first?', level: 'warm-up', tab: 'lifecycle',
-      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nSpeed', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'], kind: 'predict',
+      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nMed', 'life.nSigma', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'], kind: 'predict',
       prompt: 'The race describes the cases in which an exploit exists: the attacker is first in 72 % of them. Most vulnerabilities never get an exploit: Google counted 0.23 % of the 2026 disclosures as seen exploited, a lower bound.',
       question: 'Among 10 000 newly disclosed vulnerabilities, in how many is the attacker first?',
       options: ['About 17', 'About 170', 'About 1 700', 'About 7 200'],
       answer(S, CR) { const v = 1e4 * 0.0023 * CR.life.prob(CR.life.fromFlat(S.life)).p, t = [17, 170, 1700, 7200]; return t.reduce((b, x, i) => Math.abs(Math.log(x / v)) < Math.abs(Math.log(t[b] / v)) ? i : b, 0); },
       reveal: { 'life.base': 0.0023 },
       explain(S, CR) { const R = CR.life.prob(CR.life.fromFlat(S.life));
-        return 'About <b>' + int(R.per10k) + '</b>: 0.23 % of 10 000 is 23 vulnerabilities with an exploit, and the attacker is first in ' + pct(R.p) + ' of them. The base rate matters far more than the race: doubling the disclosures doubles this number, speeding up the n-days raises it by at most a third. See the last line of the calculation.'; },
+        return 'About <b>' + int(R.per10k) + '</b>: 0.23 % of 10 000 is 23 vulnerabilities with an exploit, and the attacker is first in ' + pct(R.p) + ' of them. The base rate matters far more than the race: doubling the disclosures doubles this number, speeding up the n-days 5 times raises it by only about ' + Math.round(100 * (CR.life.prob(CR.life.with(CR.life.fromFlat(S.life), { nMed: S.life.nMed / 5 })).p / R.p - 1)) + ' %. See the last line of the calculation.'; },
       check() { return { ok: true, msg: '' }; }
     },
     {
       id: 'shape-of-clocks', title: 'Does the Poisson assumption matter here?', blurb: 'Predict first: an exponential installation clock instead of a lognormal one, same median.', level: 'warm-up', tab: 'lifecycle',
-      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nSpeed', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'], kind: 'predict',
+      setup: {}, locked: ['life.zdShare', 'life.zdMed', 'life.nMed', 'life.nSigma', 'life.tauMed', 'life.iMed', 'life.iSigma', 'life.shape', 'life.base'], kind: 'predict',
       prompt: 'The installation clock is lognormal with a median of 43 days, and the attacker is first in 72 % of the cases.',
       question: 'Replace it by an exponential clock with the same median (a constant rate, as in the Poisson assumption of lecture 2). How far does the answer move?',
       options: ['More than 10 percentage points', 'Less than 5 percentage points', 'It drops below 50 %'],
       answer(S, CR) { const P = CR.life.fromFlat(S.life), d = Math.abs(CR.life.prob(P, 120).p - CR.life.prob(CR.life.with(P, { shape: 'exponential' }), 120).p); return d < 0.05 ? 1 : 0; },
       reveal: { 'life.shape': 'exponential' },
       explain(S, CR) { const P = CR.life.fromFlat(Object.assign({}, S.life, { shape: 'lognormal' })), E = CR.life.with(P, { shape: 'exponential' }), q = (X, u) => CR.life.quantile(X, 'i', u);
-        return 'It moves to <b>' + pct(CR.life.prob(E, 120).p) + '</b>, a couple of points: with the exploit mostly early and <i>&tau;</i> short, the median of <i>I</i> carries the answer. The shape matters for the tail: the 90th percentile of <i>I</i> is ' + int(q(P, 0.9)) + ' days for the lognormal clock and ' + int(q(E, 0.9)) + ' days for the exponential one, and the lecture 0 data show a fast cohort and a long tail that neither describes well.'; },
+        const pe = CR.life.prob(E, 120).p, pl = CR.life.prob(P, 120).p;
+        return 'It moves to <b>' + pct(pe) + '</b>, about ' + num(100 * (pl - pe)) + ' points: with the exploit mostly early and <i>&tau;</i> short, the median of <i>I</i> carries the answer. The shape matters for the tail: the 90th percentile of <i>I</i> is ' + int(q(P, 0.9)) + ' days for the lognormal clock and ' + int(q(E, 0.9)) + ' days for the exponential one, and the lecture 0 data show a fast cohort and a long tail that neither describes well.'; },
       check() { return { ok: true, msg: '' }; }
     },
     /* ---- search ---- */

@@ -7,7 +7,7 @@
   'use strict';
 
   const DEFAULTS = {
-    life:   { zdShare: 0.25, zdMed: 14, nSpeed: 1, iMed: 43, iSigma: 0.8, tauMed: 1, base: 1, shape: 'lognormal' },
+    life:   { zdShare: 0.25, zdMed: 14, nMed: 25, nSigma: 1.3, iMed: 43, iSigma: 0.8, tauMed: 1, base: 1, shape: 'lognormal' },
     search: { M: 1e4, rate: 100, days: 30, k: 0.5, rp: 0.01, rq: 0.2, rn: 100 },
     queue:  { a0: 10, mult: 3, week: 12, cF: 15, cI: 25 },
     cont:   { cMed: 50, cSigma: 1, rSigma: 0.7, m1: 20, m2: 60, m3: 150, m4: 400, o1: 1, o2: 1, o3: 1, o4: 1, L: 3, h: 1e-3, qc: 1e-4, N: 1e5, esc: 0.01, tdMed: 1, tdSigma: 0.8, tpMed: 30, tpSigma: 0.8 },
@@ -18,7 +18,8 @@
   const PARAMS = {
     'life.zdShare': { label: 'zero-day share', min: 0, max: 1, step: 0.01, dec: 2 },
     'life.zdMed':   { label: 'zero-day median (days before the patch)', min: 1, max: 120, log: true },
-    'life.nSpeed':  { label: 'n-day speed factor (AI diffing)', min: 0.2, max: 20, log: true },
+    'life.nMed':    { label: 'n-day median (days)', min: 0.5, max: 400, log: true },
+    'life.nSigma':  { label: 'n-day spread <i class="m">&sigma;</i>', min: 0.2, max: 2, step: 0.05, dec: 2 },
     'life.tauMed':  { label: 'median (days)', min: 0.05, max: 400, log: true },
     'life.iMed':    { label: 'median (days)', min: 1, max: 365, log: true },
     'life.iSigma':  { label: 'spread <i class="m">&sigma;</i>', min: 0.2, max: 2, step: 0.05, dec: 2 },
@@ -112,18 +113,20 @@
     /* ===================================================================================================
        TAB 3: THE LIFECYCLE RACE (lecture 4): X, I and tau; the attacker is first when X + tau < I
        =================================================================================================== */
+    const dnum = x => (x < 0 ? '−' : '') + (Math.abs(x) >= 100 ? String(Math.round(Math.abs(x))) : api.num(Math.abs(x)));
     modules.lifecycle = {
-      key: 'life', title: 'Lifecycle race',
+      key: 'life', title: 'Lifecycle race', sel: null, cur: null,
       mount(el) {
         el.innerHTML =
           `<div class="grid"><div>
             <p class="lede" style="margin-bottom:14px">A usable exploit exists from the day <i class="m">X</i>; this system installs the patch on day <i class="m">I</i>; after <i class="m">X</i> the adversary needs a time <i class="m">&tau;</i> on the target. The attacker is first when <i class="m">X</i> + <i class="m">&tau;</i> &lt; <i class="m">I</i>. Day 0 is the patch release, and <i class="m">X</i> is negative for a zero-day.</p>` +
-            panel('lf-dates', 'Dates on the lifecycle <span class="gl">days after the patch release, each curve scaled to its own height</span>') +
-            panel('lf-scatter', 'Exploit day against installation day <span class="gl">each dot is one case</span>', 'Filled dots: the attacker is first. Open dots: the patch is installed first. Zero-days are the dots left of day 0.') +
+            panel('lf-scatter', 'Exploit day against installation day <span class="gl">each dot is one case; click a dot</span>', 'Filled dots: the attacker is first. Open dots: the patch is installed first. Zero-days are the dots left of day 0. The ring marks the case shown below.') +
+            panel('lf-case', 'One case <span class="gl" id="lf-casegl"></span>', 'Click another dot in the scatter to see that case. <button class="btn" id="lf-typ" style="margin-left:6px">typical case</button>') +
             panel('lf-moves', 'What moves the race? <span class="gl">chance that the attacker is first after one change at a time</span>', 'The dashed line is the setting as it stands.') +
+            panel('lf-cdf', 'The two clocks <span class="gl">by day <i class="m">t</i>: the share of the cases that have an exploit, and the share that have installed the patch</span>', 'Each curve shows one clock on its own. The race itself is the scatter, because it compares <i class="m">X</i> and <i class="m">I</i> of the same case.') +
           `</div><aside>
             <div class="card" style="border-bottom:0;padding-bottom:6px"><h2>Start from a scenario <span class="gl">illustrative hypotheses, not measurements</span></h2><div class="chips" id="lf-chips"></div></div>` +
-            card('lf-cx', 'var(--colA)', 'Exploit available <i class="m">X</i>', 'a mixture of zero-days and n-days') +
+            card('lf-cx', 'var(--colA)', 'Exploit available <i class="m">X</i>', 'zero-days before the patch, n-days after it') +
             card('lf-ct', 'var(--colA)', 'Time to use the exploit <i class="m">&tau;</i>', 'short when the margin of resources over resistance is wide') +
             card('lf-ci', 'var(--colS)', 'Installation <i class="m">I</i> on this system', 'days after the patch release') +
             `<div class="card" style="color:var(--ink)"><h2><span>Shape of the installation clock</span> <span class="gl">same median in both</span></h2>
@@ -133,14 +136,18 @@
             `<div class="card calc" style="border-bottom:0"><h2>Calculation</h2><div id="lf-calc"></div></div>
             <div class="card" style="border-bottom:0"><h2>Numbers for the timeline card <span class="gl">select and copy</span></h2><textarea id="lf-export" readonly rows="13" style="width:100%;font:12px/1.4 ui-monospace,Menlo,monospace;border:1px solid var(--rule);border-radius:6px;padding:8px;background:#fff"></textarea><button class="btn" id="lf-copy" style="margin-top:6px">Copy</button> <span id="lf-copied" class="t-muted t-small"></span></div>
           </aside></div>` +
-          foot('<b>X</b>: with the zero-day share a case is a zero-day, an exploit before the patch (median of how long before: the slider); otherwise an n-day, with the timing of Mandiant\'s 41 n-days of 2023: 12, 29, 56 and 95 % within a day, a week, a month and six months. The speed factor divides every n-day time (AI patch diffing: a factor above 1 means sooner). <b>&tau;</b>: the time the adversary needs on this target; it is short when the margin of resources over resistance is wide (tab 1) and long when a control works. <b>Base rate</b>: most vulnerabilities never get an exploit; the race describes the ones that do.',
+          foot('<b>X</b>: with the zero-day share a case is a zero-day, an exploit before the patch (its timing is under &ldquo;more&rdquo;); otherwise an n-day, an exploit built after the patch, with a lognormal timing like the efforts of lecture 2. The default (median 25 days, spread 1.3) is chosen to resemble the 41 n-days of Mandiant 2023, where 12, 29, 56 and 95 % were exploited within a day, a week, a month and six months; it is not fitted to them, and the data are steeper in the first days. AI patch diffing: a smaller n-day median. <b>&tau;</b>: the time the adversary needs on this target; it is short when the margin of resources over resistance is wide (tab 1) and long when a control works. <b>Base rate</b>: most vulnerabilities never get an exploit; the race describes the ones that do.',
                'The race is mostly between <i class="m">X</i> and <i class="m">I</i>: the time to use the exploit matters only when it is long.',
-               'Illustrative. n-day timing: Mandiant 2023 [V]; installation median 43 days: Verizon DBIR 2026 [V]. The zero-day share, the spreads and &tau; are assumptions; 0.23 % of 2026 disclosures were seen exploited (Google Threat Intelligence Group, 30 September 2026 [V]), a lower bound.');
-        addParams('lf-cx', ['life.zdShare', 'life.zdMed', 'life.nSpeed']);
+               'Illustrative. n-day timing resembles Mandiant 2023 [V]; installation median 43 days: Verizon DBIR 2026 [V]. The zero-day share, the spreads and &tau; are assumptions; 0.23 % of 2026 disclosures were seen exploited (Google Threat Intelligence Group, 30 September 2026 [V]), a lower bound.');
+        addParams('lf-cx', ['life.zdShare', 'life.nMed', 'life.nSigma']);
+        const fold = document.createElement('details'); fold.style.marginTop = '4px';
+        fold.innerHTML = '<summary class="t-muted t-small" style="cursor:pointer">more: when the zero-days come</summary><div></div>';
+        $('lf-cx').querySelector('.body').appendChild(fold); addParam(fold.querySelector('div'), 'life.zdMed');
         addParams('lf-ct', ['life.tauMed']);
         addParams('lf-ci', ['life.iMed', 'life.iSigma']);
         addParams('lf-cb', ['life.base']);
         el.querySelectorAll('input[name=lf-shape]').forEach(r => r.addEventListener('change', () => { if (r.checked) { api.set('life.shape', r.value); api.render(); } }));
+        $('lf-typ').addEventListener('click', () => { this.sel = null; api.render(); });
         $('lf-export').addEventListener('focus', e => e.target.select());
         $('lf-copy').addEventListener('click', () => { const t = $('lf-export'); t.focus(); t.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} $('lf-copied').textContent = ok ? 'copied' : 'select the text and copy it'; });
       },
@@ -150,37 +157,25 @@
         const D = DEFAULTS.life;
         chips('lf-chips', [
           ['Today (the race frame)', () => Object.assign(S().life, api.clone(D))],
-          ['AI patch diffing: n-days 5 times sooner', () => Object.assign(S().life, api.clone(D), { nSpeed: 5 })],
+          ['AI patch diffing: n-days 5 times sooner', () => Object.assign(S().life, api.clone(D), { nMed: D.nMed / 5 })],
           ['More zero-days: half of the cases', () => Object.assign(S().life, api.clone(D), { zdShare: 0.5 })],
           ['Installation twice as fast', () => Object.assign(S().life, api.clone(D), { iMed: D.iMed / 2 })],
           ['Installation twice as slow (more patches)', () => Object.assign(S().life, api.clone(D), { iMed: D.iMed * 2 })],
           ['A hardened target: &tau; = 30 days'.replace('&tau;', 'τ'), () => Object.assign(S().life, api.clone(D), { tauMed: 30 })],
           ['Only 0.23 % ever get an exploit', () => Object.assign(S().life, api.clone(D), { base: 0.0023 })]]);
-        this.drawDates(P, s); this.drawScatter(P, R); this.drawMoves(P, R); this.drawCalc(P, s, R); $('lf-export').value = this.exportText(P, s, R);
-      },
-      drawDates(P, s) {
-        const host = $('lf-dates'), f = api.frame(host, 190, 52), lo = -60, hi = niceUp(Math.max(CR.life.quantile(P, 'i', 0.9), CR.life.quantile(P, 'x', 0.9)) * 1.05, [100, 150, 250, 400, 600]);
-        const xm = d => f.L + (d - lo) / (hi - lo) * f.pw, yb = f.T + f.ph, ymax = 1.15, expo = P.shape === 'exponential';
-        const iPdf = x => x <= 0 ? 0 : expo ? (Math.LN2 / P.i.med) * Math.exp(-Math.LN2 / P.i.med * x) : Math.exp(-0.5 * Math.pow((Math.log(x) - Math.log(P.i.med)) / P.i.sigma, 2)) / (x * P.i.sigma);
-        const xPdf = x => (CR.life.xCdf(P, x + 0.4) - CR.life.xCdf(P, x - 0.4)) / 0.8;
-        const xs = api.linspace(lo, hi, 420), iPeak = Math.max(...xs.map(iPdf)) || 1, xPeak = Math.max(...xs.map(xPdf)) || 1;
-        let g = axisLine(f, f.L, f.W - f.R, yb);
-        [-60, -30, 0, 50, 100, 200, 300, 500].filter(d => d >= lo && d <= hi).forEach(d => g += tick(xm(d), yb, d));
-        g += '<text x="' + (f.W / 2) + '" y="' + (f.H - 4) + '" text-anchor="middle" class="t-muted t-small">days after the patch release (0 = patch released)</text>';
-        g += '<line x1="' + xm(0) + '" x2="' + xm(0) + '" y1="' + (f.T - 4) + '" y2="' + yb + '" stroke="#555" stroke-dasharray="5 4"/><text x="' + (xm(0) + 5) + '" y="' + (f.T + 4) + '" class="t-small t-muted">patch</text>';
-        g += '<path d="' + api.path(f, xs, d => iPdf(d) / iPeak, xm, ymax, true) + '" fill="var(--colS)" fill-opacity=".14"/><path d="' + api.path(f, xs, d => iPdf(d) / iPeak, xm, ymax, false) + '" fill="none" stroke="var(--colS)" stroke-width="2.4" stroke-dasharray="6 4"/>';
-        g += '<path d="' + api.path(f, xs, d => xPdf(d) / xPeak, xm, ymax, true) + '" fill="var(--colA)" fill-opacity=".14"/><path d="' + api.path(f, xs, d => xPdf(d) / xPeak, xm, ymax, false) + '" fill="none" stroke="var(--colA)" stroke-width="2.4"/>';
-        const lx = f.W - f.R - 4;
-        g += '<line x1="' + (lx - 250) + '" x2="' + (lx - 224) + '" y1="' + (f.T + 12) + '" y2="' + (f.T + 12) + '" stroke="var(--colA)" stroke-width="3"/><text x="' + (lx - 218) + '" y="' + (f.T + 16) + '" class="t-small" fill="var(--colA)"><tspan class="m">X</tspan>: exploit available</text>';
-        g += '<line x1="' + (lx - 250) + '" x2="' + (lx - 224) + '" y1="' + (f.T + 30) + '" y2="' + (f.T + 30) + '" stroke="var(--colS)" stroke-width="3" stroke-dasharray="6 4"/><text x="' + (lx - 218) + '" y="' + (f.T + 34) + '" class="t-small" fill="var(--colS)"><tspan class="m">I</tspan>: patch installed here</text>';
-        host.innerHTML = svgWrap(f, g, 'Distributions of the day the exploit appears and the day the patch is installed');
+        this.drawScatter(P, R); this.drawCase(P); this.drawMoves(P, R); this.drawCdf(P); this.drawCalc(P, s, R); $('lf-export').value = this.exportText(P, s, R);
       },
       drawScatter(P, R) {
-        const host = $('lf-scatter'), pts = CR.life.scatter(P, 260), f0 = api.frame(host, 330, 46);
+        const host = $('lf-scatter'), N = 260, pts = CR.life.scatter(P, N), f0 = api.frame(host, 330, 46);
         const wide = f0.pw >= 560, side = Math.max(170, Math.min(wide ? f0.pw - 290 : f0.pw - 70, 290)), head = wide ? 0 : 80;
         const f = api.frame(host, side + 22 + 46 + head, 46), yb = f.T + head + side, x0 = f.L + 44;
         const lo = -60, ax = niceUp(Math.max(CR.life.quantile(P, 'i', 0.9), CR.life.quantile(P, 'x', 0.9)), [60, 100, 150, 250, 400, 600, 1000]);
         const xm = v => x0 + (v - lo) / (ax - lo) * side, ym = v => yb - v / ax * side;
+        // the typical case is the dot nearest to the medians of X and I; a click on a dot selects another one
+        const mX = CR.life.quantile(P, 'x', 0.5), mI = CR.life.quantile(P, 'i', 0.5);
+        let typ = 0, best = Infinity; pts.forEach((p, k) => { const d = Math.hypot(p.X - mX, p.I - mI); if (d < best) { best = d; typ = k; } });
+        const cur = this.sel != null && this.sel < pts.length ? this.sel : typ;
+        this.cur = { k: cur, typical: this.sel == null || this.sel >= pts.length, pt: pts[cur] };
         let g = axisLine(f, xm(lo), xm(ax), yb) + '<line x1="' + xm(lo) + '" x2="' + xm(lo) + '" y1="' + ym(ax) + '" y2="' + yb + '" stroke="#8a8a8a"/>';
         const step = ax <= 100 ? 20 : ax <= 250 ? 50 : ax <= 600 ? 100 : 200;
         for (let v = 0; v <= ax; v += step) { g += tick(xm(v), yb, v); g += '<text x="' + (xm(lo) - 6) + '" y="' + (ym(v) + 4) + '" text-anchor="end" class="t-muted">' + v + '</text>'; }
@@ -189,10 +184,13 @@
         g += '<text x="' + (xm(lo) - 34) + '" y="' + (ym(ax) - 8) + '" class="t-muted t-small">installed <tspan class="m">I</tspan>, days</text>';
         g += '<path d="M' + xm(lo) + ' ' + yb + 'L' + xm(0) + ' ' + yb + 'L' + xm(ax) + ' ' + ym(ax) + 'L' + xm(lo) + ' ' + ym(ax) + 'Z" fill="var(--colA)" fill-opacity=".07"/>';
         g += '<line x1="' + xm(0) + '" y1="' + yb + '" x2="' + xm(ax) + '" y2="' + ym(ax) + '" stroke="#999" stroke-width="1.4"/><line x1="' + xm(0) + '" x2="' + xm(0) + '" y1="' + ym(ax) + '" y2="' + yb + '" stroke="#999" stroke-dasharray="4 3"/>';
-        let off = 0, nfirst = 0;
-        pts.forEach(p => { if (p.first) nfirst++; if (p.X > ax || p.I > ax || p.X < lo) { off++; return; }
+        let off = 0, nfirst = 0, hit = '';
+        pts.forEach((p, k) => { if (p.first) nfirst++; if (p.X > ax || p.I > ax || p.X < lo) { off++; return; }
           if (p.first) g += '<circle cx="' + xm(p.X) + '" cy="' + ym(p.I) + '" r="2.8" fill="var(--colA)" fill-opacity=".8"/>';
-          else g += '<circle cx="' + xm(p.X) + '" cy="' + ym(p.I) + '" r="2.6" fill="none" stroke="var(--colS)" stroke-width="1.3"/>'; });
+          else g += '<circle cx="' + xm(p.X) + '" cy="' + ym(p.I) + '" r="2.6" fill="none" stroke="var(--colS)" stroke-width="1.3"/>';
+          hit += '<circle data-k="' + k + '" cx="' + xm(p.X) + '" cy="' + ym(p.I) + '" r="6" fill="transparent" style="cursor:pointer"/>'; });
+        const c = pts[cur]; if (!(c.X > ax || c.I > ax || c.X < lo)) g += '<circle cx="' + xm(c.X) + '" cy="' + ym(c.I) + '" r="7" fill="none" stroke="#111" stroke-width="1.6"/>';
+        g += hit;
         g += '<text x="' + (xm(ax) - 4) + '" y="' + (ym(0) - 6) + '" text-anchor="end" class="t-small" fill="var(--colS)" font-weight="700">patch first</text>';
         g += '<text x="' + (xm(lo) + 6) + '" y="' + (ym(ax) + 14) + '" class="t-small" fill="var(--colA)" font-weight="700">attacker first</text>';
         const tx = wide ? xm(ax) + 24 : x0, ty = wide ? ym(ax) + 22 : f.T + 14, dy = wide ? 28 : 22;
@@ -200,14 +198,39 @@
         if (wide) g += '<text x="' + tx + '" y="' + (ty + dy) + '" fill="var(--colA)" font-weight="700" font-size="26">' + api.pct(R.p) + '</text>';
         else g += '<text x="' + (tx + 150) + '" y="' + ty + '" fill="var(--colA)" font-weight="700" font-size="16">' + api.pct(R.p) + '</text>';
         g += '<text class="t-small t-muted" x="' + tx + '" y="' + (ty + (wide ? dy + 20 : 18)) + '">with <tspan class="m">&tau;</tspan> = 0: ' + api.pct(R.p0) + '</text>';
-        g += '<text class="t-small t-muted" x="' + tx + '" y="' + (ty + (wide ? dy + 36 : 32)) + '">filled dots: ' + Math.round(100 * nfirst / 260) + ' % of the 260 dots</text>';
+        g += '<text class="t-small t-muted" x="' + tx + '" y="' + (ty + (wide ? dy + 36 : 32)) + '">filled dots: ' + Math.round(100 * nfirst / N) + ' % of the ' + N + ' dots</text>';
         if (off) g += '<text class="t-small t-muted" x="' + tx + '" y="' + (ty + (wide ? dy + 52 : 46)) + '">' + off + ' dots are off the scale</text>';
-        host.innerHTML = svgWrap(f, g, 'Scatter of exploit day against installation day');
+        host.innerHTML = svgWrap(f, g, 'Scatter of exploit day against installation day; click a dot to see that case');
+        host.onclick = e => { const t = e.target.closest ? e.target.closest('[data-k]') : null; if (t) { this.sel = +t.getAttribute('data-k'); api.render(); } };
+        return pts;
+      },
+      drawCase(P) {
+        const c = this.cur, pt = c.pt, host = $('lf-case'), f = api.frame(host, 116, 6);
+        $('lf-casegl').textContent = c.typical ? 'the typical case: the dot nearest to the medians' : 'the case you clicked';
+        const a = Math.min(0, pt.X) - 10, b = Math.max(pt.I, pt.X + pt.tau, 12) * 1.06 + 4;
+        const step = niceUp((b - a) / 7, [5, 10, 20, 50, 100, 200, 500, 1000, 2000]), x0 = f.L + 16, xm = d => x0 + (d - a) / (b - a) * (f.pw - 32), ty = f.T + 38;
+        let g = axisLine(f, xm(a), xm(b), ty);
+        for (let v = Math.ceil(a / step) * step; v <= b; v += step) g += tick(xm(v), ty, v);
+        g += '<line x1="' + xm(0) + '" x2="' + xm(0) + '" y1="' + (ty - 36) + '" y2="' + ty + '" stroke="#555" stroke-dasharray="5 4"/><text x="' + (xm(0) + 5) + '" y="' + (ty - 28) + '" class="t-small t-muted">patch</text>';
+        g += '<line x1="' + xm(pt.X) + '" x2="' + xm(pt.X + pt.tau) + '" y1="' + ty + '" y2="' + ty + '" stroke="var(--colA)" stroke-width="7" stroke-opacity=".35" stroke-linecap="round"/>';
+        const near = Math.abs(xm(pt.I) - xm(pt.X)) < 96;
+        g += '<path d="M' + xm(pt.X) + ' ' + (ty - 7) + 'L' + (xm(pt.X) + 7) + ' ' + ty + 'L' + xm(pt.X) + ' ' + (ty + 7) + 'L' + (xm(pt.X) - 7) + ' ' + ty + 'Z" fill="var(--colA)"/>';
+        g += '<text x="' + xm(pt.X) + '" y="' + (ty - 13) + '" text-anchor="middle" class="t-small" fill="var(--colA)" font-weight="700"><tspan class="m">X</tspan> = ' + dnum(pt.X) + ' days' + (pt.zero ? ' (zero-day)' : '') + '</text>';
+        g += '<circle cx="' + xm(pt.I) + '" cy="' + ty + '" r="5.5" fill="var(--colS)"/>';
+        g += '<text x="' + xm(pt.I) + '" y="' + (ty - (near ? 27 : 13)) + '" text-anchor="middle" class="t-small" fill="var(--colS)" font-weight="700"><tspan class="m">I</tspan> = ' + dnum(pt.I) + ' days</text>';
+        if (pt.I > pt.X) {
+          const x1 = xm(pt.X), x2 = xm(pt.I), yb = ty + 32;
+          g += '<path d="M' + x1 + ' ' + (yb - 5) + 'L' + x1 + ' ' + yb + 'L' + x2 + ' ' + yb + 'L' + x2 + ' ' + (yb - 5) + '" fill="none" stroke="var(--colH)" stroke-width="1.6"/>';
+          g += '<text x="' + ((x1 + x2) / 2) + '" y="' + (yb + 15) + '" text-anchor="middle" class="t-small" fill="var(--colH)" font-weight="700"><tspan class="m">W</tspan> = <tspan class="m">I</tspan> &minus; <tspan class="m">X</tspan> = ' + dnum(pt.I - pt.X) + ' days</text>';
+        } else g += '<text x="' + ((xm(pt.X) + xm(pt.I)) / 2) + '" y="' + (ty + 47) + '" text-anchor="middle" class="t-small t-muted">no window: the patch is installed before an exploit exists</text>';
+        const first = pt.first;
+        g += '<text x="' + (f.W - f.R) + '" y="' + (f.T - 6) + '" text-anchor="end" class="t-small" fill="var(' + (first ? '--colA' : '--colS') + ')" font-weight="700">' + (first ? 'attacker first' : 'patch first') + ': <tspan class="m">X</tspan> + <tspan class="m">&tau;</tspan> = ' + dnum(pt.X + pt.tau) + (first ? ' &lt; ' : ' &ge; ') + dnum(pt.I) + '</text>';
+        host.innerHTML = svgWrap(f, g, 'One case on the lifecycle: exploit day, time to use it, installation day and window');
       },
       drawMoves(P, R) {
         const host = $('lf-moves'), f = api.frame(host, 168, 30), xl = 232, base = 1;
         const rows = [
-          ['n-days 5 times sooner (AI diffing)', { s: P.s * 5 }, 'var(--colA)'],
+          ['n-days 5 times sooner (AI diffing)', { nMed: P.nMed / 5 }, 'var(--colA)'],
           ['zero-day share doubled', { w0: Math.min(1, P.w0 * 2) }, 'var(--colA)'],
           ['installation twice as fast', { i: { med: Math.max(1, P.i.med / 2) } }, 'var(--colS)'],
           ['installation twice as slow', { i: { med: P.i.med * 2 } }, 'var(--colS)'],
@@ -223,9 +246,27 @@
         g += '<line x1="' + xm(R.p) + '" x2="' + xm(R.p) + '" y1="' + (f.T - 4) + '" y2="' + (f.T + f.ph + 2) + '" stroke="#333" stroke-dasharray="5 4" stroke-width="1.5"/><text x="' + xm(R.p) + '" y="' + (f.T - 7) + '" text-anchor="middle" class="t-small" font-weight="700">as set: ' + api.pct(R.p) + '</text>';
         host.innerHTML = svgWrap(f, g, 'Chance that the attacker is first after one change at a time');
       },
+      drawCdf(P) {
+        const host = $('lf-cdf'), f = api.frame(host, 176, 44), lo = -60, ml = 34;
+        const hi = niceUp(Math.max(CR.life.quantile(P, 'i', 0.9), CR.life.quantile(P, 'x', 0.9)) * 1.4, [100, 150, 200, 250, 400, 600]);
+        const xm = d => f.L + ml + (d - lo) / (hi - lo) * (f.pw - ml), yb = f.T + f.ph, ym = v => yb - v * f.ph;
+        const xs = api.linspace(lo, hi, 360);
+        let g = '';
+        [0, 0.5, 1].forEach(v => g += '<line x1="' + xm(lo) + '" x2="' + xm(hi) + '" y1="' + ym(v) + '" y2="' + ym(v) + '" stroke="#E6E6E2"/><text x="' + (xm(lo) - 6) + '" y="' + (ym(v) + 4) + '" text-anchor="end" class="t-muted t-small">' + Math.round(100 * v) + ' %</text>');
+        g += axisLine(f, xm(lo), xm(hi), yb);
+        [-60, -30, 0, 50, 100, 150, 200, 250, 400, 600].filter(d => d >= lo && d <= hi).forEach(d => g += tick(xm(d), yb, d));
+        g += '<text x="' + xm((lo + hi) / 2) + '" y="' + (f.H - 4) + '" text-anchor="middle" class="t-muted t-small">days after the patch release (0 = patch released)</text>';
+        g += '<line x1="' + xm(0) + '" x2="' + xm(0) + '" y1="' + (f.T - 4) + '" y2="' + yb + '" stroke="#555" stroke-dasharray="5 4"/><text x="' + (xm(0) + 5) + '" y="' + (f.T + 4) + '" class="t-small t-muted">patch</text>';
+        const line = (fn, color, dash) => '<path d="' + api.path(f, xs, fn, xm, 1, false) + '" fill="none" stroke="' + color + '" stroke-width="2.4"' + (dash ? ' stroke-dasharray="6 4"' : '') + '/>';
+        g += line(d => CR.life.iCdf(P, d), 'var(--colS)', true) + line(d => CR.life.xCdf(P, d), 'var(--colA)', false);
+        const lx = xm(hi) - 6;
+        g += '<line x1="' + (lx - 230) + '" x2="' + (lx - 204) + '" y1="' + (f.T + 40) + '" y2="' + (f.T + 40) + '" stroke="var(--colA)" stroke-width="3"/><text x="' + (lx - 198) + '" y="' + (f.T + 44) + '" class="t-small" fill="var(--colA)">share with an exploit by day <tspan class="m">t</tspan> (<tspan class="m">X</tspan> &le; <tspan class="m">t</tspan>)</text>';
+        g += '<line x1="' + (lx - 230) + '" x2="' + (lx - 204) + '" y1="' + (f.T + 58) + '" y2="' + (f.T + 58) + '" stroke="var(--colS)" stroke-width="3" stroke-dasharray="6 4"/><text x="' + (lx - 198) + '" y="' + (f.T + 62) + '" class="t-small" fill="var(--colS)">share patched by day <tspan class="m">t</tspan> (<tspan class="m">I</tspan> &le; <tspan class="m">t</tspan>)</text>';
+        host.innerHTML = svgWrap(f, g, 'Share of the cases with an exploit and share patched, by day');
+      },
       drawCalc(P, s, R) {
-        const expo = P.shape === 'exponential';
-        let h = calcLine('EXPLOIT DAY <i>X</i>', 'zero-day share ' + api.pct(P.w0) + ', median ' + days(s.zdMed) + ' days before the patch; n-days at ' + (s.nSpeed === 1 ? 'the Mandiant timing' : 'the Mandiant timing &times; ' + api.num(s.nSpeed) + ' sooner') + ': median <i>X</i> = <b>' + days(CR.life.quantile(P, 'x', 0.5)) + ' days</b>');
+        const expo = P.shape === 'exponential', D = DEFAULTS.life, sooner = s.nMed < D.nMed * 0.999 ? ' (' + api.num(D.nMed / s.nMed) + ' times sooner than today)' : '';
+        let h = calcLine('EXPLOIT DAY <i>X</i>', 'zero-day share ' + api.pct(P.w0) + ' (median ' + days(s.zdMed) + ' days before the patch); n-days: lognormal, median ' + days(s.nMed) + ' days after the patch' + sooner + ', spread &sigma; = ' + api.f2(s.nSigma) + '. Median <i>X</i> = <b>' + days(CR.life.quantile(P, 'x', 0.5)) + ' days</b>');
         h += calcLine('INSTALLATION <i>I</i>', (expo ? 'exponential' : 'lognormal') + ', median ' + days(s.iMed) + ' days' + (expo ? '' : ', spread &sigma; = ' + api.f2(s.iSigma)));
         h += calcLine('TIME TO USE THE EXPLOIT <i>&tau;</i>', 'exponential, median <b>' + dayW(s.tauMed) + '</b>: Pr(&tau; &lt; <i>W</i>) = 1 &minus; e<sup>&minus;<i>W</i> ln 2 / ' + days(s.tauMed) + '</sup>');
         h += calcLine('THE ATTACKER IS FIRST', '<span class="big" style="color:var(--colA)">Pr(<i>X</i> + &tau; &lt; <i>I</i>) = ' + api.pct(R.p) + '</span>; with &tau; = 0 it would be ' + api.pct(R.p0), false);
@@ -234,15 +275,15 @@
       },
       exportText(P, s, R) {
         const q = (w, u) => CR.life.quantile(P, w, u), r0 = x => Math.abs(x) >= 100 ? String(Math.round(x)) : api.num(x), rng = w => r0(q(w, 0.1)) + ' to ' + r0(q(w, 0.9));
-        const pr = ch => api.pct(CR.life.prob(CR.life.with(P, ch), 90).p).replace(/\s*%/, '').padStart(4) + ' %';
+        const pr = ch => api.pct(CR.life.prob(CR.life.with(P, ch), 90).p).replace(/\s*%/, '').padStart(4) + ' %', D = DEFAULTS.life;
         return ['TIMELINE CARD, numbers from the lifecycle race (illustrative unless you replace them with sourced values)',
-          'exploit available X: zero-day share ' + api.pct(P.w0) + ', n-days at ' + (s.nSpeed === 1 ? 'the Mandiant timing' : api.num(s.nSpeed) + ' times sooner') + '; median ' + r0(q('x', 0.5)) + ' days (10 to 90 %: ' + rng('x') + ')',
+          'exploit available X: zero-day share ' + api.pct(P.w0) + '; n-days lognormal, median ' + r0(s.nMed) + ' days after the patch' + (s.nMed < D.nMed * 0.999 ? ' (' + api.num(D.nMed / s.nMed) + ' times sooner than today)' : '') + '; median X ' + r0(q('x', 0.5)) + ' days (10 to 90 %: ' + rng('x') + ')',
           'installation I: ' + s.shape + ', median ' + r0(s.iMed) + ' days (10 to 90 %: ' + rng('i') + ')',
           'time to use the exploit tau: exponential, median ' + r0(s.tauMed) + (s.tauMed === 1 ? ' day' : ' days'),
           'exposure window W: mean ' + r0(R.meanW) + ' days; no window in ' + api.pct(R.noWindow),
           'Pr(attacker first) = ' + api.pct(R.p) + ' (with tau = 0: ' + api.pct(R.p0) + ')',
           'what-if, same settings except:',
-          '  n-days 5 times sooner              ' + pr({ s: P.s * 5 }),
+          '  n-days 5 times sooner              ' + pr({ nMed: P.nMed / 5 }),
           '  zero-day share doubled             ' + pr({ w0: Math.min(1, P.w0 * 2) }),
           '  installation twice as fast         ' + pr({ i: { med: Math.max(1, P.i.med / 2) } }),
           '  installation twice as slow         ' + pr({ i: { med: P.i.med * 2 } }),

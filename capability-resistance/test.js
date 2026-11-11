@@ -29,39 +29,49 @@ near('PhiInv(Phi(1.234))', CR.PhiInv(CR.Phi(1.234)), 1.234, 1e-9);
 // Lecture 4: lifecycle clock, search, backlog, prioritise (all deterministic)
 // ---------------------------------------------------------------------------------------------------
 {
-  const L = CR.life, flat = { zdShare: 0.25, zdMed: 14, nSpeed: 1, iMed: 43, iSigma: 0.8, tauMed: 1, base: 1, shape: 'lognormal' };
+  const L = CR.life, flat = { zdShare: 0.25, zdMed: 14, nMed: 25, nSigma: 1.3, iMed: 43, iSigma: 0.8, tauMed: 1, base: 1, shape: 'lognormal' };
   const P0 = L.fromFlat(flat), pr = (P, ch) => L.prob(ch ? L.with(P, ch) : P, 200);
-  // the numbers of the race frame (computations/lecture4-lifecycle/race-x-against-i.js: 0.7248 and 0.7318)
-  near('race: attacker first, today', pr(P0).p, 0.7248, 0.002);
-  near('race: with tau = 0 (the window opens)', pr(P0, { tauMed: 1e-6 }).p0, 0.7318, 0.002);
+  // the headline of the race frame is 72 % (73 % with tau = 0); the tool shows whole percents, so these must round the same way
+  near('race: headline rounds to 72 %', Math.round(100 * pr(P0).p), 72, 0);
+  near('race: headline with tau = 0 rounds to 73 %', Math.round(100 * pr(P0, { tauMed: 1e-6 }).p0), 73, 0);
+  near('race: attacker first, today', pr(P0).p, 0.7196, 0.002);
+  near('race: with tau = 0 (the window opens)', pr(P0, { tauMed: 1e-6 }).p0, 0.7287, 0.002);
   near('race: tau -> 0 equals Pr(window)', pr(P0, { tauMed: 1e-6 }).p, pr(P0).p0, 2e-4);
   near('zero-day share of the cases', pr(P0).zeroShare, 0.25, 1e-12);
-  near('quantile of X at 0.5 (median, days)', L.quantile(P0, 'x', 0.5), 8.8, 0.15);
+  near('quantile of X at 0.5 (median, days)', L.quantile(P0, 'x', 0.5), 14.3, 0.2);
   near('quantile of I at 0.5 is the median', L.quantile(P0, 'i', 0.5), 43, 1e-6);
-  near('n-day shares: 12 % within a day', L.nday.cdf(1), 0.12, 1e-12); near('n-day shares: 29 % within a week', L.nday.cdf(7), 0.29, 1e-12);
-  near('n-day shares: 56 % within a month', L.nday.cdf(30), 0.56, 1e-12); near('n-day shares: 95 % within six months', L.nday.cdf(180), 0.95, 1e-12);
-  near('n-day quantile inverts the cdf', L.nday.cdf(L.nday.quantile(0.4)), 0.4, 1e-12);
+  // the distribution functions behind the plot of the two clocks
+  near('cdf of X at day 0 is the zero-day share', L.xCdf(P0, 0), 0.25, 1e-12);
+  near('cdf of X at the n-day median, no zero-days', L.xCdf(L.with(P0, { w0: 0 }), 25), 0.5, 1e-12);
+  near('cdf of X inverts the quantile', L.xCdf(P0, L.quantile(P0, 'x', 0.4)), 0.4, 1e-9);
+  near('cdf of I at the median (lognormal)', L.iCdf(P0, 43), 0.5, 1e-12);
+  near('cdf of I at the median (exponential)', L.iCdf(L.with(P0, { shape: 'exponential' }), 43), 0.5, 1e-12);
+  near('cdf of I is zero before day 0', L.iCdf(P0, -5), 0, 0);
   // behaviour
-  near('no window when every exploit comes long after the installation', L.prob(L.with(P0, { w0: 0, s: 1e-6 }), 120).p, 0, 1e-3);
-  let prev = -1, mono = true; for (const s of [0.2, 0.5, 1, 2, 5, 20, 100]) { const p = pr(P0, { s }).p; if (p < prev) mono = false; prev = p; }
-  near('Pr increases with the n-day speed factor', mono ? 1 : 0, 1, 0);
+  near('no window when every exploit comes long after the installation', L.prob(L.with(P0, { w0: 0, nMed: 1e6 }), 120).p, 0, 1e-3);
+  let prev = 2, mono = true; for (const m of [1, 5, 10, 25, 50, 100, 400]) { const p = pr(P0, { nMed: m }).p; if (p > prev) mono = false; prev = p; }
+  near('Pr decreases as the n-day median grows', mono ? 1 : 0, 1, 0);
   prev = 2; mono = true; for (const t of [0.1, 1, 3, 10, 30, 100]) { const p = pr(P0, { tauMed: t }).p; if (p > prev) mono = false; prev = p; }
   near('Pr decreases with the time to use the exploit', mono ? 1 : 0, 1, 0);
   prev = -1; mono = true; for (const m of [5, 20, 43, 90, 200]) { const p = pr(P0, { i: { med: m } }).p; if (p < prev) mono = false; prev = p; }
   near('Pr increases with the installation time', mono ? 1 : 0, 1, 0);
   prev = -1; mono = true; for (const w of [0, 0.25, 0.5, 0.75, 1]) { const p = pr(P0, { w0: w }).p; if (p < prev) mono = false; prev = p; }
   near('Pr increases with the zero-day share', mono ? 1 : 0, 1, 0);
+  near('all zero-days: the attacker is first almost always', pr(P0, { w0: 1 }).p, 1, 0.02);
   near('quadrature 120 against 240 nodes', L.prob(P0, 120).p, L.prob(P0, 240).p, 2e-3);
   const sc = L.scatter(P0, 600); near('scatter share against exact', sc.filter(q => q.first).length / 600, pr(P0).p, 0.04);
   near('scatter zero-day share', sc.filter(q => q.zero).length / 600, 0.25, 0.03);
+  near('scatter gives every case a time to use the exploit', sc.every(q => q.tau > 0) ? 1 : 0, 1, 0);
   // what moves the race (the numbers of the exercises)
-  near('n-days 5 times sooner', pr(P0, { s: 5 }).p, 0.9325, 0.003); near('installation twice as fast', pr(P0, { i: { med: 21.5 } }).p, 0.6174, 0.003);
-  near('tau 3 times longer', pr(P0, { tauMed: 3 }).p, 0.7076, 0.003); near('exponential installation clock', pr(P0, { shape: 'exponential' }).p, 0.7009, 0.003);
-  near('keep up: installation median at 5 times sooner', L.solveI(L.with(P0, { s: 5 }), 0.73), 10.8, 0.5);
-  near('ai diffing: the factor for 85 %', L.solveSpeed(P0, 0.85), 2.38, 0.05);
-  near('tau: the median for 60 %', L.solveTau(P0, 0.6), 13.0, 0.4);
-  near('zero-day share for 90 %', L.solveW0(P0, 0.9), 0.728, 0.01);
-  near('per 10 000 at base rate 0.23 %', pr(L.with(P0, { base: 0.0023 })).per10k, 16.7, 0.3);
+  near('n-days 5 times sooner', pr(P0, { nMed: 5 }).p, 0.934, 0.003); near('installation twice as fast', pr(P0, { i: { med: 21.5 } }).p, 0.579, 0.003);
+  near('installation twice as slow', pr(P0, { i: { med: 86 } }).p, 0.839, 0.003);
+  near('tau 3 times longer', pr(P0, { tauMed: 3 }).p, 0.698, 0.003); near('exponential installation clock', pr(P0, { shape: 'exponential' }).p, 0.687, 0.003);
+  near('keep up: installation median at 5 times sooner', L.solveI(L.with(P0, { nMed: 5 }), 0.73), 10.9, 0.5);
+  near('ai diffing: the n-day median for 85 %', L.solveN(P0, 0.85), 11.1, 0.3);
+  near('tau: the median for 60 %', L.solveTau(P0, 0.6), 11.7, 0.4);
+  near('zero-day share for 90 %', L.solveW0(P0, 0.9), 0.7325, 0.01);
+  near('all n-days: the attacker is first', pr(P0, { w0: 0 }).p, 0.626, 0.003);
+  near('per 10 000 at base rate 0.23 %', pr(L.with(P0, { base: 0.0023 })).per10k, 16.55, 0.3);
   // search
   near('independent draws N = M/2', CR.search.indep(5000, 1e4), 0.3935, 1e-3);
   near('independent draws at N = M', CR.search.indep(1e4, 1e4), 0.6321, 1e-3);

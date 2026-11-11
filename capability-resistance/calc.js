@@ -60,35 +60,18 @@
   /* ---- the lifecycle race (lecture 4) -------------------------------------------------------------------
      t = 0 is the patch release. X, the day a usable exploit exists, is a mixture:
        zero-day (weight w0):  X = -exp(ln zdMed + zdSigma z), z standard normal (an exploit before the patch);
-       n-day (weight 1 - w0): X follows the Mandiant shares of 41 n-days of 2023 [V]: 12, 29, 56 and 95 % within 1 day, 1 week,
-         1 month and 6 months, interpolated linearly in log time between these points, divided by the speed factor s
-         (AI patch diffing: s > 1 makes every n-day exploit arrive s times sooner).
+       n-day (weight 1 - w0): X = nMed exp(nSigma z), days after the patch: a lognormal like the efforts of lecture 2. The default
+         (median 25 days, spread 1.3) is chosen to resemble the 41 n-days of Mandiant 2023 [V] (12, 29, 56 and 95 % within a day, a week, a
+         month and six months), not fitted to them, and so that the headline of the race frame (72 %, 73 % with tau = 0) comes out.
+         AI patch diffing: a smaller nMed (every n-day arrives that many times sooner).
      I: the day this system installs the patch (lognormal, or exponential with the same median).
      tau: the time the adversary needs on this target after X: exponential with median tauMed (days). It is short when the margin
        of resources over resistance is wide (lecture 2 comparison); the tool takes it as a given.
      W = (I - X)^+ is the window and the attacker is first when X + tau < I:
        Pr = E[ 1{I > X} (1 - exp(-ln2 (I - X) / tauMed)) ].
      base: the share of vulnerabilities that ever get an exploit (1 = condition on an exploit existing, as on the race frame).
-     P = { w0, zdMed, zdSigma, s, i:{med,sigma}, shape:'lognormal'|'exponential', tauMed, base } */
-  const NDAY_KNOTS = [[1, 0.12], [7, 0.29], [30, 0.56], [180, 0.95], [365, 1]];
-  function ndayQuantile(u) {                                             // days after the patch, u in (0,1)
-    if (u <= NDAY_KNOTS[0][1]) return u / NDAY_KNOTS[0][1];
-    for (let k = 1; k < NDAY_KNOTS.length; k++) {
-      const a = NDAY_KNOTS[k - 1], b = NDAY_KNOTS[k];
-      if (u <= b[1]) return Math.exp(Math.log(a[0]) + (u - a[1]) / (b[1] - a[1]) * (Math.log(b[0]) - Math.log(a[0])));
-    }
-    return NDAY_KNOTS[NDAY_KNOTS.length - 1][0];
-  }
-  function ndayCdf(t) {                                                  // inverse of ndayQuantile
-    if (!(t > 0)) return 0;
-    if (t <= NDAY_KNOTS[0][0]) return NDAY_KNOTS[0][1] * t;
-    for (let k = 1; k < NDAY_KNOTS.length; k++) {
-      const a = NDAY_KNOTS[k - 1], b = NDAY_KNOTS[k];
-      if (t <= b[0]) return a[1] + (Math.log(t) - Math.log(a[0])) / (Math.log(b[0]) - Math.log(a[0])) * (b[1] - a[1]);
-    }
-    return 1;
-  }
-  const LIFE_DEFAULT = { w0: 0.25, zdMed: 14, zdSigma: 0.8, s: 1, i: { med: 43, sigma: 0.8 }, shape: 'lognormal', tauMed: 1, base: 1 };
+     P = { w0, zdMed, zdSigma, nMed, nSigma, i:{med,sigma}, shape:'lognormal'|'exponential', tauMed, base } */
+  const LIFE_DEFAULT = { w0: 0.25, zdMed: 14, zdSigma: 0.8, nMed: 25, nSigma: 1.3, i: { med: 43, sigma: 0.8 }, shape: 'lognormal', tauMed: 1, base: 1 };
   function condProb(P, w) {                                              // Pr(tau < w): the attack has worked within w days
     return w > 0 ? 1 - Math.exp(-w * LN2 / P.tauMed) : 0;
   }
@@ -100,11 +83,11 @@
     for (let k = 0; k < n; k++) { const zk = -5 + (k + 0.5) * h; z.push(zk); const wk = Math.exp(-0.5 * zk * zk); w.push(wk); tot += wk; }
     return (_gridCache[n] = { z, w: w.map(v => v / tot) });
   }
-  // the nodes of X with their weights: zero-day branch on a normal grid, n-day branch on a uniform grid of the inverse cdf
+  // the nodes of X with their weights: both branches on the normal grid
   function xNodes(P, n) {
-    const G = grid(n), m = Math.max(120, Math.round(n * 1.5)), xs = [], ws = [];
+    const G = grid(n), xs = [], ws = [];
     if (P.w0 > 0) for (let a = 0; a < G.z.length; a++) { xs.push(-Math.exp(Math.log(P.zdMed) + P.zdSigma * G.z[a])); ws.push(P.w0 * G.w[a]); }
-    if (P.w0 < 1) for (let k = 0; k < m; k++) { xs.push(ndayQuantile((k + 0.5) / m) / P.s); ws.push((1 - P.w0) / m); }
+    if (P.w0 < 1) for (let a = 0; a < G.z.length; a++) { xs.push(P.nMed * Math.exp(P.nSigma * G.z[a])); ws.push((1 - P.w0) * G.w[a]); }
     return { xs, ws };
   }
   // exact (quadrature) Pr(attacker first) and the other readouts; n = nodes per dimension
@@ -123,7 +106,12 @@
   // distribution function of X (for quantiles and the display)
   function xCdf(P, x) {
     const fz = x >= 0 ? 1 : 1 - Phi((Math.log(-x) - Math.log(P.zdMed)) / P.zdSigma);
-    return P.w0 * fz + (1 - P.w0) * ndayCdf(x * P.s);
+    return P.w0 * fz + (1 - P.w0) * (x > 0 ? Phi((Math.log(x) - Math.log(P.nMed)) / P.nSigma) : 0);
+  }
+  // distribution function of I (share installed by day x)
+  function iCdf(P, x) {
+    if (!(x > 0)) return 0;
+    return P.shape === 'exponential' ? 1 - Math.exp(-x * LN2 / P.i.med) : Phi((Math.log(x) - Math.log(P.i.med)) / P.i.sigma);
   }
   // quantile of one clock, u in (0,1): 'x', 'i' or 'tau'
   function lifeQuantile(P, which, u) {
@@ -137,9 +125,9 @@
     const pts = [], cl = u => Math.min(Math.max(u, 1e-9), 1 - 1e-9);
     for (let k = 1; k <= n; k++) {
       const zero = halton(k, 2) < P.w0, ux = halton(k, 3), ui = cl(halton(k, 5)), ut = cl(halton(k, 7));
-      const x = zero ? -Math.exp(Math.log(P.zdMed) + P.zdSigma * PhiInv(cl(ux))) : ndayQuantile(ux) / P.s;
+      const x = zero ? -Math.exp(Math.log(P.zdMed) + P.zdSigma * PhiInv(cl(ux))) : P.nMed * Math.exp(P.nSigma * PhiInv(cl(ux)));
       const i = iFromZ(P, PhiInv(ui)), tau = -(P.tauMed / LN2) * Math.log(1 - ut);
-      pts.push({ X: x, I: i, zero, first: i - x > 0 && x + tau < i });
+      pts.push({ X: x, I: i, tau, zero, first: i - x > 0 && x + tau < i });
     }
     return pts;
   }
@@ -153,13 +141,13 @@
     for (let k = 0; k < 40; k++) { const mid = Math.sqrt(lo * hi); if (f(mid) <= target) lo = mid; else hi = mid; }
     return lo;
   }
-  // smallest n-day speed factor giving Pr >= target (null if not reachable below hi)
-  function lifeSolveSpeed(P, target, lo, hi) {
-    lo = lo || 0.2; hi = hi || 200;
-    const f = s => _prob(P, { s });
-    if (f(lo) >= target) return lo; if (f(hi) < target) return null;
-    for (let k = 0; k < 40; k++) { const mid = Math.sqrt(lo * hi); if (f(mid) >= target) hi = mid; else lo = mid; }
-    return hi;
+  // largest n-day median (days after the patch) giving Pr >= target (null if even a median of lo is too slow)
+  function lifeSolveN(P, target, lo, hi) {
+    lo = lo || 0.05; hi = hi || 2000;
+    const f = m => _prob(P, { nMed: m });
+    if (f(hi) >= target) return hi; if (f(lo) < target) return null;
+    for (let k = 0; k < 40; k++) { const mid = Math.sqrt(lo * hi); if (f(mid) >= target) lo = mid; else hi = mid; }
+    return lo;
   }
   // smallest zero-day weight giving Pr >= target (null if not reachable)
   function lifeSolveW0(P, target) {
@@ -270,11 +258,11 @@
   const monitorSolveTd = (m, target) => Math.exp(Math.log(m.tpMed) - PhiInv(target) * Math.hypot(m.tpSigma, m.tdSigma));
 
   // the page keeps its parameters flat (ids like life.xMean); these turn them into the objects above
-  const lifeFromFlat = s => ({ w0:s.zdShare, zdMed:s.zdMed, zdSigma:0.8, s:s.nSpeed, i:{ med:s.iMed, sigma:s.iSigma }, shape:s.shape, tauMed:s.tauMed, base:s.base });
+  const lifeFromFlat = s => ({ w0:s.zdShare, zdMed:s.zdMed, zdSigma:0.8, nMed:s.nMed, nSigma:s.nSigma, i:{ med:s.iMed, sigma:s.iSigma }, shape:s.shape, tauMed:s.tauMed, base:s.base });
   const PRIO_CVSS = [9.8, 7.5, 5.3];
   const prioItems = s => [1, 2, 3].map(n => ({ cvss:PRIO_CVSS[n - 1], pi:s['pi' + n], L:s['L' + n], e:s['e' + n] }));
   const CR = { erfc, Phi, PhiInv, normPdf, mu, margin, mixture, risk,
-    life: { DEFAULT: LIFE_DEFAULT, fromFlat: lifeFromFlat, condProb, prob: lifeProb, quantile: lifeQuantile, xCdf, scatter: lifeScatter, solveI: lifeSolveI, solveSpeed: lifeSolveSpeed, solveW0: lifeSolveW0, solveTau: lifeSolveTau, with: lifeWith, nday: { quantile: ndayQuantile, cdf: ndayCdf, KNOTS: NDAY_KNOTS } },
+    life: { DEFAULT: LIFE_DEFAULT, fromFlat: lifeFromFlat, condProb, prob: lifeProb, quantile: lifeQuantile, xCdf, iCdf, scatter: lifeScatter, solveI: lifeSolveI, solveN: lifeSolveN, solveW0: lifeSolveW0, solveTau: lifeSolveTau, with: lifeWith },
     runs: { part: runsPart, indep: runsIndep, rep: runsRep, need: runsNeed, solveQ: runsSolveQ },
     cont: { paths: pathsStats, layers: layersParts, crossover: layersCrossover, monitor: monitorStats, solveTd: monitorSolveTd },
     search: { indep: searchIndep, syst: searchSyst, guided: searchGuided, need: searchNeed },
