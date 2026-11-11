@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capability against resistance: calculator (lectures 2 and 4)</title>
+<!-- 1DT118 Cybersecurity Analysis. One self-contained page: no network, no fonts to download, no build step.
+     Open it from disk. Maths in calc.js, exercises in exercises.js (both plain scripts next to this file). -->
+<style>
+:root{
+  /* tokens of the slide theme minflat2 */
+  --canvas:#FAFAF8; --ink:#1D1D1F; --secondary:#6E6E73; --rule:#D2D2D7; --accent:#990000;
+  /* course colours (Okabe-Ito, as in shared/common.tex): system, adversary, assumptions, evidence, harm */
+  --colS:#0072B2; --colA:#C45600; --colH:#8F5575; --colE:#00825E; --colP:#A67200; --muted:#737373;
+  --sans:"Fira Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --math:"Latin Modern Math","STIX Two Math","Cambria Math","Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html{background:var(--canvas)}
+body{margin:0 auto;max-width:1180px;padding:28px 24px 48px;color:var(--ink);font:15px/1.5 var(--sans);-webkit-text-size-adjust:100%}
+.m{font-family:var(--math);font-style:italic}
+sub{font-size:72%;line-height:0;vertical-align:-.28em}
+header .kicker{font-size:11px;letter-spacing:.09em;color:var(--secondary);font-weight:600}
+h1{font-size:26px;line-height:1.2;margin:.15em 0 .25em;font-weight:600}
+.lede{margin:0 0 14px;color:var(--secondary);max-width:62em}
+nav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin-bottom:18px}
+nav button{font:inherit;font-weight:500;background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px 8px 0;margin-right:14px;color:var(--secondary);cursor:pointer}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+nav button:focus-visible,.chip:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+h2{font-size:13px;letter-spacing:.02em;margin:0 0 4px;font-weight:600}
+h2 .gl,.gl{font-weight:400;color:var(--secondary)}
+.panel{margin-bottom:18px}
+.panel svg{display:block;width:100%;overflow:visible;touch-action:none}
+.hint{font-size:12px;color:var(--secondary);margin:2px 0 0}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+svg .lbl{paint-order:stroke;stroke:#FAFAF8;stroke-width:3.5px;stroke-linejoin:round}
+svg .t-muted{fill:var(--muted)} svg .t-small{font-size:11px}
+svg .m{font-family:var(--math);font-style:italic}
+svg .handle{cursor:ew-resize;touch-action:none}
+svg .handle:focus{outline:none}
+svg .handle:focus-visible{stroke:var(--accent);stroke-width:3}
+svg .locked{cursor:not-allowed;opacity:.35}
+.card{padding:0 0 12px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.card h2{display:flex;align-items:center;gap:8px}
+.card h2 i.sw{display:inline-block;width:18px;height:0;border-top:3px solid currentColor}
+.card h2 i.sw.dash{border-top-style:dashed}
+.row{display:grid;grid-template-columns:7.2em 1fr 5.4em;gap:8px;align-items:center;margin:4px 0}
+.row label{font-size:13px;color:var(--secondary)}
+.row input[type=range]{width:100%;margin:0}
+.row input[type=number]{width:100%;font:inherit;font-size:13px;padding:2px 4px;border:1px solid var(--rule);background:#fff;border-radius:2px;color:var(--ink)}
+.row input:disabled{opacity:.45;cursor:not-allowed}
+.derived{font-size:12px;color:var(--secondary);margin:0 0 0 7.2em;padding-left:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+.chip,.btn{font:inherit;font-size:13px;background:#fff;border:1px solid var(--rule);border-radius:2px;padding:4px 9px;color:var(--ink);cursor:pointer}
+.chip:hover,.btn:hover{border-color:var(--secondary)}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.calc{font-size:14px}
+.calc .line{display:grid;grid-template-columns:1fr;gap:0;margin:5px 0;padding-bottom:5px;border-bottom:1px dotted var(--rule)}
+.calc .what{font-size:11px;color:var(--secondary);letter-spacing:.02em}
+.calc .eq{font-family:var(--math);font-size:16px}
+.calc .res{font-weight:600}
+.big{font-size:22px;font-weight:600}
+.shelf{margin-top:6px;padding:8px 12px;background:#F0F0ED;border-left:3px solid var(--accent);font-size:13px}
+.shelf b{font-weight:600}
+.takeaway{margin:12px 0 0;color:var(--accent);font-weight:600;font-size:15px}
+.source{margin:8px 0 0;font-size:11px;color:var(--secondary)}
+.toggle{font-size:12px;color:var(--secondary);display:flex;align-items:center;gap:6px;margin-top:4px}
+.banner{border-left:3px solid var(--accent);background:#F0F0ED;padding:10px 14px;margin:0 0 18px}
+.banner .tag{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--accent)}
+.banner .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.banner .fb{margin-top:8px;font-weight:600}
+.banner .fb.ok{color:var(--colE)} .banner .fb.no{color:var(--ink)}
+.banner .more{margin-top:8px;font-size:13px}
+.banner label.opt{display:block;margin:2px 0;font-size:14px}
+.exlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.exlist button{font:inherit;text-align:left;background:#fff;border:1px solid var(--rule);border-radius:2px;padding:12px;cursor:pointer;color:var(--ink)}
+.exlist button:hover{border-color:var(--secondary)}
+.exlist .lv{font-size:11px;color:var(--secondary);letter-spacing:.05em;text-transform:uppercase}
+.exlist .ti{font-weight:600;margin:2px 0 4px}
+.exlist .go{font-size:12px;color:var(--accent);margin-top:6px;display:block}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">1DT118 CYBERSECURITY ANALYSIS &middot; CALCULATOR</div>
+  <h1>Capability against resistance</h1>
+  <p class="lede" id="lede-main">An attack succeeds when the effort the adversary can bring exceeds the effort the attack needs. Both are uncertain, so we model each as a lognormal distribution. Drag the curves or use the sliders, and watch the success probability <i class="m">p</i>.</p>
+  <nav id="tabs" role="tablist">
+    <button role="tab" data-tab="success">1 &nbsp;Success probability</button>
+    <button role="tab" data-tab="control">2 &nbsp;The control may fail</button>
+    <button role="tab" data-tab="lifecycle">3 &nbsp;Lifecycle race</button>
+    <button role="tab" data-tab="search">4 &nbsp;Search</button>
+    <button role="tab" data-tab="backlog">5 &nbsp;Backlog</button>
+    <button role="tab" data-tab="prioritise">6 &nbsp;Prioritise</button>
+    <button role="tab" data-tab="containment">7 &nbsp;Containment (4b)</button>
+    <button role="tab" data-tab="exercises">Exercises</button>
+  </nav>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<main>
+<section id="view-calc" class="grid">
+  <div>
+    <div class="panel">
+      <h2 id="h-effort">Two efforts <span class="gl">on a logarithmic axis</span></h2>
+      <div id="effort"></div>
+      <p class="hint" id="hint-drag">Drag &#9679; to move the median, &#9670; to change the spread. Arrow keys work when a handle has focus.</p>
+      <label class="toggle" id="overlap-toggle"><input type="checkbox" id="overlap"> show where the two curves overlap (a common misconception, see the takeaway)</label>
+    </div>
+    <div class="panel">
+      <h2 id="h-margin">Log-margin <span class="gl">ln <i class="m">c</i><sub>A</sub> &minus; ln <i class="m">r</i><sub>S</sub>, the shaded tail is the probability</span></h2>
+      <div id="margin"></div>
+    </div>
+    <div class="panel" id="extra-wrap">
+      <h2 id="h-extra"></h2>
+      <div id="extra"></div>
+      <p class="hint" id="extra-cap"></p>
+    </div>
+  </div>
+
+  <aside>
+    <div class="card" id="card-presets">
+      <h2>Start from a slide example</h2>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="card" id="card-c" data-tabs="success control" style="color:var(--colA)">
+      <h2><i class="sw"></i><span>Capability <i class="m">c</i><sub>A</sub></span> <span class="gl">what the adversary can bring</span></h2>
+      <div id="ctl-c"></div>
+    </div>
+    <div class="card" id="card-r" data-tabs="success control" style="color:var(--colS)">
+      <h2><i class="sw dash" id="sw-r"></i><span id="t-r">Resistance <i class="m">r</i><sub>S</sub></span> <span class="gl" id="g-r">what the attack needs</span></h2>
+      <div id="ctl-r"></div>
+    </div>
+    <div class="card" id="card-f" data-tabs="control" style="color:var(--colS)" hidden>
+      <h2><i class="sw dash"></i><span>Control fails</span> <span class="gl">the resistance in the failed state</span></h2>
+      <div id="ctl-f"></div>
+    </div>
+    <div class="card" id="card-q" data-tabs="control" style="color:var(--ink)" hidden>
+      <h2><span>Control reliability <i class="m">q</i></span> <span class="gl">chance that it works when attacked</span></h2>
+      <div id="ctl-q"></div>
+    </div>
+    <div class="card calc" id="card-calc" style="border-bottom:0">
+      <h2>Calculation</h2>
+      <div id="calc"></div>
+    </div>
+  </aside>
+</section>
+
+<section id="view-ex" hidden>
+  <p class="lede" style="margin-bottom:12px">Each exercise loads the calculator with a starting situation and locks what you may not change. Targets are inequalities, so you can reach them by dragging.</p>
+  <div class="exlist" id="exlist"></div>
+</section>
+
+<section id="view-mod" hidden></section>
+
+<div id="foot">
+  <div class="shelf" id="shelf"></div>
+  <p class="takeaway" id="takeaway"></p>
+  <p class="source">Effort is measured in hours of a reference adversary (competent, design known); it is one number standing for time, money, skill and compute. All numbers are illustrations. Load-and-strength model: Rychlik &amp; Ryd&eacute;n (2006), Ex. 8.1; capability against resistance as in FAIR (Freund &amp; Jones 2014).</p>
+</div>
+</main>
+
+<script src="calc.js"></script>
+<script src="exercises.js"></script>
+<script src="tabs4.js"></script>
+<script>
+(function(){
+'use strict';
+/* ---------- state ---------- */
+const T4 = window.CR_TABS4 || null;
+const clone = o => JSON.parse(JSON.stringify(o));
+const BASE = Object.assign({ c:{med:3,sigma:1.0}, r:{med:40,sigma:0.7}, fail:{med:4}, q:0.85 }, T4 ? clone(T4.DEFAULTS) : {});   // tabs 1-2 and, nested, the four tabs of lecture 4
+const merge = (a, b) => { for (const k in b) { if (b[k] && typeof b[k] === 'object') a[k] = merge(a[k] || {}, b[k]); else a[k] = b[k]; } return a; };
+let S = clone(BASE), tab = 'success', ex = null, locked = new Set(), frozen = null;
+const MED = [0.2, 5000], SIG = [0.2, 2.5];
+const LN_MIN = Math.log(0.1), LN_MAX = Math.log(10000), D_MAX = 11;
+const $ = id => document.getElementById(id);
+const clamp = (x,a,b) => Math.min(b, Math.max(a, x));
+const get = id => { const [a,b] = id.split('.'); return b ? S[a][b] : S[a]; };
+const set = (id, v) => { const [a,b] = id.split('.'), P = T4 && T4.PARAMS[id];
+  if (typeof v === 'string') v = v; else v = P ? clamp(+v, P.min, P.max) : clamp(+v, ...(id==='q' ? [0,1] : b==='sigma' ? SIG : MED));
+  if (b) S[a][b] = v; else S[a] = v; };
+
+/* ---------- formatting ---------- */
+const num = x => { const s = (+x).toPrecision(3); return s.indexOf('.')>=0 ? s.replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'') : s; };
+const medTxt = x => x >= 100 ? String(Math.round(x)) : num(x);
+const f2 = x => (Math.abs(x)<0.005?0:x).toFixed(2).replace('-','−');
+const pct = p => { const v = 100*p; return (v>=10 ? v.toFixed(0) : v>=1 ? v.toFixed(1) : v>=0.01 ? v.toFixed(2) : '<0.01') + ' %'; };
+const one = p => p>0 && p<0.5 ? '≈ 1 in ' + Math.round(1/p).toLocaleString('en') : '';
+const sub = (b,s) => '<i class="m">'+b+'</i><sub>'+s+'</sub>';
+const svgSym = (b,s) => '<tspan class="m">'+b+'</tspan><tspan class="m" dy="3" font-size="9">'+s+'</tspan><tspan dy="-3"></tspan>';
+
+/* ---------- controls (built once) ---------- */
+const ctl = {};
+function addControl(host, id, label, kind){
+  const row = document.createElement('div'); row.className = 'row';
+  const lo = kind==='med' ? Math.log10(MED[0]) : kind==='sigma' ? SIG[0] : 0, hi = kind==='med' ? Math.log10(MED[1]) : kind==='sigma' ? SIG[1] : 1;
+  const step = kind==='med' ? 0.005 : 0.01;
+  row.innerHTML = '<label for="n-'+id+'">'+label+'</label><input type="range" id="s-'+id+'" min="'+lo+'" max="'+hi+'" step="'+step+'" aria-label="'+label.replace(/<[^>]+>/g,'')+'">' +
+                  '<input type="number" id="n-'+id+'" step="'+(kind==='med'?'any':'0.05')+'" min="'+(kind==='med'?MED[0]:kind==='sigma'?SIG[0]:0)+'" max="'+(kind==='med'?MED[1]:kind==='sigma'?SIG[1]:1)+'">';
+  host.appendChild(row);
+  const sl = row.querySelector('input[type=range]'), nu = row.querySelector('input[type=number]');
+  const toS = v => kind==='med' ? Math.log10(v) : v, fromS = v => kind==='med' ? Math.pow(10, v) : v;
+  sl.addEventListener('input', () => { set(id, fromS(+sl.value)); render(); });
+  nu.addEventListener('change', () => { if (nu.value !== '') set(id, +nu.value); render(); });
+  ctl[id] = { sl, nu, kind, sync(){ const v = get(id); sl.value = toS(v); if (document.activeElement !== nu) nu.value = kind==='med' ? medTxt(v) : kind==='sigma' ? num(v) : v.toFixed(2);
+                                    const lk = locked.has(id); sl.disabled = nu.disabled = lk; } };
+  if (kind === 'med') { const d = document.createElement('p'); d.className = 'derived'; d.id = 'd-'+id; host.appendChild(d); }
+}
+addControl($('ctl-c'), 'c.med', 'median (h)', 'med');   addControl($('ctl-c'), 'c.sigma', 'spread <i class="m">&sigma;</i>', 'sigma');
+addControl($('ctl-r'), 'r.med', 'median (h)', 'med');   addControl($('ctl-r'), 'r.sigma', 'spread <i class="m">&sigma;</i>', 'sigma');
+addControl($('ctl-f'), 'fail.med', 'median (h)', 'med');
+addControl($('ctl-q'), 'q', '<i class="m">q</i>', 'q');
+
+/* ---------- plotting helpers ---------- */
+const STEPS = [0.5,0.8,1.2,1.7,2.5,3.5,5];
+const yStep = m => STEPS.find(s => s >= m*1.12) || STEPS[STEPS.length-1];
+function frame(host, H, mb){
+  const W = Math.max(300, Math.floor(host.clientWidth || 640)), L = 8, R = 8, T = 22;
+  return { W, H, L, R, T, B: mb, pw: W-L-R, ph: H-T-mb };
+}
+function path(f, xs, fn, xmap, ymax, close){
+  let d = '', first = true;
+  for (const x of xs){ const y = fn(x); d += (first?'M':'L') + xmap(x).toFixed(1) + ' ' + (f.T + f.ph*(1 - Math.min(y, ymax)/ymax)).toFixed(1); first = false; }
+  if (close) d += 'L' + xmap(xs[xs.length-1]).toFixed(1) + ' ' + (f.T+f.ph) + 'L' + xmap(xs[0]).toFixed(1) + ' ' + (f.T+f.ph) + 'Z';
+  return d;
+}
+const linspace = (a,b,n) => Array.from({length:n}, (_,i) => a + (b-a)*i/(n-1));
+
+/* the effort components of the current tab */
+function components(){
+  const mc = CR.mu(S.c), mr = CR.mu(S.r), mf = Math.log(S.fail.med);
+  if (tab === 'control') return [
+    { id:'c', color:'var(--colA)', dash:null, mu:mc, s:S.c.sigma, w:1, label:'capability '+svgSym('c','A'), sig:'c.sigma', muId:'c.med' },
+    { id:'r', color:'var(--colS)', dash:null, mu:mr, s:S.r.sigma, w:S.q, label:'effective, '+svgSym('q','')+' = '+S.q.toFixed(2), sig:'r.sigma', muId:'r.med' },
+    { id:'f', color:'var(--colS)', dash:'6 4', mu:mf, s:S.r.sigma, w:1-S.q, label:'fails, 1 − '+svgSym('q',''), sig:null, muId:'fail.med' } ];
+  return [
+    { id:'c', color:'var(--colA)', dash:null, mu:mc, s:S.c.sigma, w:1, label:'capability '+svgSym('c','A'), sig:'c.sigma', muId:'c.med' },
+    { id:'r', color:'var(--colS)', dash:'6 4', mu:mr, s:S.r.sigma, w:1, label:'resistance '+svgSym('r','S'), sig:'r.sigma', muId:'r.med' } ];
+}
+
+function renderEffort(){
+  const host = $('effort'), comps = components(), f = frame(host, 236, 40);
+  const xm = l => f.L + (l - LN_MIN)/(LN_MAX - LN_MIN)*f.pw, lx = x => LN_MIN + (x - f.L)/f.pw*(LN_MAX - LN_MIN);
+  const peak = Math.max(...comps.map(c => c.w * CR.normPdf(c.mu, c.mu, c.s)));
+  const ymax = frozen ? frozen.effort : yStep(peak);
+  const xs = linspace(LN_MIN, LN_MAX, 260), ym = d => f.T + f.ph*(1 - Math.min(d, ymax)/ymax);
+  let g = '';
+  // axis
+  g += '<line x1="'+f.L+'" x2="'+(f.W-f.R)+'" y1="'+(f.T+f.ph)+'" y2="'+(f.T+f.ph)+'" stroke="#8a8a8a"/>';
+  [0.1,1,10,100,1000,10000].forEach(h => { const x = xm(Math.log(h));
+    g += '<line x1="'+x+'" x2="'+x+'" y1="'+(f.T+f.ph)+'" y2="'+(f.T+f.ph+4)+'" stroke="#8a8a8a"/><text x="'+x+'" y="'+(f.T+f.ph+17)+'" text-anchor="middle" class="t-muted">'+(h>=1000?(h/1000)+' 000':h)+'</text>'; });
+  g += '<text x="'+(f.W/2)+'" y="'+(f.H-4)+'" text-anchor="middle" class="t-muted t-small">effort in hours of a reference adversary (log scale)</text>';
+  // overlap (misconception)
+  if (tab === 'success' && $('overlap').checked){
+    const a = comps[0], b = comps[1], fn = x => Math.min(CR.normPdf(x,a.mu,a.s), CR.normPdf(x,b.mu,b.s));
+    g += '<path d="'+path(f,xs,fn,xm,ymax,true)+'" fill="#999" fill-opacity=".35"/>';
+    const xo = xm((a.mu+b.mu)/2); g += '<text x="'+xo+'" y="'+(f.T+f.ph-6)+'" text-anchor="middle" class="t-small" fill="#555">overlap ≠ probability</text>';
+  }
+  // curves
+  comps.forEach(c => {
+    const fn = x => c.w * CR.normPdf(x, c.mu, c.s);
+    g += '<path d="'+path(f,xs,fn,xm,ymax,true)+'" fill="'+c.color+'" fill-opacity="'+(c.dash?0.06:0.12)+'" stroke="none"/>';
+    g += '<path d="'+path(f,xs,fn,xm,ymax,false)+'" fill="none" stroke="'+c.color+'" stroke-width="2.4"'+(c.dash?' stroke-dasharray="'+c.dash+'"':'')+'/>';
+  });
+  // labels and handles
+  comps.forEach((c, i) => {
+    const px = xm(c.mu), py = ym(c.w*CR.normPdf(c.mu,c.mu,c.s));
+    const leftSide = c.mu === Math.min(...comps.map(q => q.mu));
+    g += '<text class="lbl" x="'+(px + (leftSide?-10:10))+'" y="'+(py-22)+'" text-anchor="'+(leftSide?'end':'start')+'" fill="'+c.color+'" font-weight="600">'+c.label+'</text>';
+    g += '<text class="lbl t-muted t-small" x="'+(px + (leftSide?-10:10))+'" y="'+(py-9)+'" text-anchor="'+(leftSide?'end':'start')+'">median '+medTxt(Math.exp(c.mu))+' h</text>';
+    g += '<line x1="'+px+'" x2="'+px+'" y1="'+py+'" y2="'+(f.T+f.ph)+'" stroke="'+c.color+'" stroke-dasharray="2 3" opacity=".7"/>';
+    const lk = locked.has(c.muId);
+    g += '<circle class="handle'+(lk?' locked':'')+'" data-h="'+c.muId+'" data-k="mu" tabindex="'+(lk?-1:0)+'" role="slider" aria-label="median of '+c.label.replace(/<[^>]+>/g,'')+'" aria-valuetext="'+medTxt(Math.exp(c.mu))+' hours" cx="'+px+'" cy="'+py+'" r="7.5" fill="'+c.color+'" stroke="#fff" stroke-width="2"/>';
+    if (c.sig){
+      const sx = xm(c.mu + c.s), sy = ym(c.w*CR.normPdf(c.mu + c.s, c.mu, c.s)), lk2 = locked.has(c.sig);
+      g += '<rect class="handle'+(lk2?' locked':'')+'" data-h="'+c.sig+'" data-k="sigma" data-mu="'+c.mu+'" tabindex="'+(lk2?-1:0)+'" role="slider" aria-label="spread of '+c.label.replace(/<[^>]+>/g,'')+'" aria-valuetext="sigma '+num(c.s)+'" x="'+(sx-6)+'" y="'+(sy-6)+'" width="12" height="12" transform="rotate(45 '+sx+' '+sy+')" fill="#fff" stroke="'+c.color+'" stroke-width="2.4"/>';
+    }
+  });
+  host.innerHTML = '<svg viewBox="0 0 '+f.W+' '+f.H+'" width="'+f.W+'" height="'+f.H+'" role="img" aria-label="Lognormal densities of capability and resistance on a log axis">'+g+'</svg>';
+  host._geom = { f, lx, xm };
+}
+
+function renderMargin(){
+  const host = $('margin'), f = frame(host, 196, 44), k = tab === 'control' ? CR.mixture(S.c, S.r, S.fail.med, S.q) : CR.margin(S.c, S.r);
+  const xm = d => f.L + (d + D_MAX)/(2*D_MAX)*f.pw;
+  const parts = tab === 'control'
+    ? [ { w:S.q, mu:k.eff.muD, s:k.eff.sigD, dash:null, name:'effective' }, { w:1-S.q, mu:k.fail.muD, s:k.fail.sigD, dash:'6 4', name:'fails' } ]
+    : [ { w:1, mu:k.muD, s:k.sigD, dash:null } ];
+  const total = x => parts.reduce((a,p) => a + p.w*CR.normPdf(x,p.mu,p.s), 0);
+  const xs = linspace(-D_MAX, D_MAX, 360), xp = xs.filter(x => x >= 0);
+  const peak = Math.max(...xs.map(total)), ymax = frozen ? frozen.margin : yStep(peak);
+  const yb = f.T + f.ph;
+  let g = '';
+  g += '<line x1="'+f.L+'" x2="'+(f.W-f.R)+'" y1="'+yb+'" y2="'+yb+'" stroke="#8a8a8a"/>';
+  [[-Math.log(100),'÷100'],[-Math.log(10),'÷10'],[0,'equal'],[Math.log(10),'×10'],[Math.log(100),'×100']].forEach(([d,l]) => { const x = xm(d);
+    g += '<line x1="'+x+'" x2="'+x+'" y1="'+yb+'" y2="'+(yb+4)+'" stroke="#8a8a8a"/><text x="'+x+'" y="'+(yb+17)+'" text-anchor="middle" class="t-muted">'+l+'</text>'; });
+  g += '<text x="'+(f.W/2)+'" y="'+(f.H-4)+'" text-anchor="middle" class="t-muted t-small">capability relative to resistance (log scale)</text>';
+  g += '<text x="'+(xm(0)-8)+'" y="'+(f.T-6)+'" text-anchor="end" class="t-muted t-small">resistance wins ←</text><text x="'+(xm(0)+8)+'" y="'+(f.T-6)+'" class="t-muted t-small">→ capability wins</text>';
+  // shaded tail = probability (true density, so the area is p)
+  g += '<path d="'+path(f,xp,total,xm,ymax,true)+'" fill="var(--colA)" fill-opacity=".38"/>';
+  if (parts.length > 1){
+    parts.forEach(p => { g += '<path d="'+path(f,xs,x => p.w*CR.normPdf(x,p.mu,p.s),xm,ymax,false)+'" fill="none" stroke="var(--colS)" stroke-width="2.2"'+(p.dash?' stroke-dasharray="'+p.dash+'"':'')+'/>'; });
+    g += '<path d="'+path(f,xs,total,xm,ymax,false)+'" fill="none" stroke="#333" stroke-width="1.1"/>';
+  } else g += '<path d="'+path(f,xs,total,xm,ymax,false)+'" fill="none" stroke="#222" stroke-width="2.4"/>';
+  g += '<line x1="'+xm(0)+'" x2="'+xm(0)+'" y1="'+(f.T)+'" y2="'+yb+'" stroke="#555" stroke-dasharray="5 4"/>';
+  // z bracket (success tab) and probability label
+  if (parts.length === 1){
+    const x1 = xm(k.muD), x0 = xm(0), yz = f.T + f.ph*0.28;
+    g += '<line x1="'+x1+'" x2="'+x1+'" y1="'+(f.T+f.ph*(1-total(k.muD)/ymax))+'" y2="'+yb+'" stroke="#555" stroke-dasharray="2 3"/>';
+    if (Math.abs(x1-x0) > 30){
+      g += '<line x1="'+x1+'" x2="'+x0+'" y1="'+yz+'" y2="'+yz+'" stroke="#444" marker-start="url(#ah)" marker-end="url(#ah)"/>';
+      g += '<text x="'+((x1+x0)/2)+'" y="'+(yz-6)+'" text-anchor="middle" class="t-small"><tspan class="m">z</tspan> = '+f2(k.z)+' standard deviations from equal</text>';
+    }
+  }
+  const lblx = Math.min(xm(0)+10, f.W-90);
+  g += '<text class="lbl" x="'+lblx+'" y="'+(yb-14)+'" fill="var(--colA)" font-weight="700" font-size="14">'+(parts.length>1 ? '' : '<tspan class="m">p</tspan> = ')+pct(k.p)+'</text>';
+  if (parts.length > 1) g += '<text x="'+lblx+'" y="'+(yb-30)+'" class="lbl t-small t-muted">'+pct(k.a)+' + '+pct(k.b)+' =</text>';
+  g += '<defs><marker id="ah" viewBox="0 0 6 6" refX="3" refY="3" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0L6,3L0,6z" fill="#444"/></marker></defs>';
+  host.innerHTML = '<svg viewBox="0 0 '+f.W+' '+f.H+'" width="'+f.W+'" height="'+f.H+'" role="img" aria-label="Distribution of the log-margin with the success tail shaded">'+g+'</svg>';
+}
+
+function renderExtra(){
+  const host = $('extra'), cap = $('extra-cap'), hd = $('h-extra');
+  if (tab === 'control'){
+    hd.innerHTML = 'Where the probability comes from <span class="gl">each state contributes its weight times its own success probability</span>';
+    const k = CR.mixture(S.c, S.r, S.fail.med, S.q), f = frame(host, 96, 20), x = v => f.L + v/Math.max(k.p, 1e-9)*f.pw*0.0 ;
+    const tot = Math.max(k.p, 1e-9), wa = k.a/tot*f.pw, wb = k.b/tot*f.pw, y = 22, h = 28;
+    let g = '<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fff"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--colS)" stroke-width="2.4"/></pattern></defs>';
+    g += '<rect x="'+f.L+'" y="'+y+'" width="'+wa+'" height="'+h+'" fill="var(--colS)" fill-opacity=".85"/>';
+    g += '<rect x="'+(f.L+wa)+'" y="'+y+'" width="'+wb+'" height="'+h+'" fill="url(#hatch)" stroke="var(--colS)" stroke-width="1.5"/>';
+    g += '<text x="'+f.L+'" y="'+(y-6)+'" class="t-small"><tspan class="m">p</tspan> = '+pct(k.p)+' in total</text>';
+    g += '<text x="'+(f.L+Math.min(wa, f.pw)/2)+'" y="'+(y+h+15)+'" text-anchor="middle" class="t-small" fill="var(--colS)" font-weight="600">effective: '+pct(k.a)+'</text>';
+    g += '<text x="'+(f.L+wa+wb/2)+'" y="'+(y+h+15)+'" text-anchor="middle" class="t-small" fill="var(--colS)" font-weight="600">fails: '+pct(k.b)+'</text>';
+    host.innerHTML = '<svg viewBox="0 0 '+f.W+' 96" width="'+f.W+'" height="96">'+g+'</svg>';
+    cap.innerHTML = 'The control is in the failed state with weight '+pct(1-S.q)+', and that state carries <b>'+pct(k.failShare)+'</b> of the success probability.';
+    $('extra-wrap').hidden = false; return;
+  }
+  hd.innerHTML = 'How much does the spread matter? <span class="gl"><i class="m">p</i> if the combined spread were larger or smaller, medians kept</span>';
+  const k = CR.margin(S.c, S.r), f = frame(host, 176, 38), m0 = 0.5, m1 = 2, LG = 9.2;
+  const lg = p => Math.log(clamp(p,1e-4,1-1e-4)/(1-clamp(p,1e-4,1-1e-4)));
+  const xm = m => f.L + 40 + (Math.log(m) - Math.log(m0))/(Math.log(m1) - Math.log(m0))*(f.pw - 52), ym = p => f.T + f.ph*(1 - (lg(p)+LG)/(2*LG));
+  const xs = linspace(Math.log(m0), Math.log(m1), 120).map(Math.exp), xr = f.W-f.R-12;
+  let g = '';
+  [[1e-4,'0.01 %'],[1e-3,'0.1 %'],[.01,'1 %'],[.1,'10 %'],[.5,'50 %'],[.9,'90 %'],[.99,'99 %'],[.999,'99.9 %']].forEach(([p,l]) =>
+    g += '<line x1="'+(f.L+44)+'" x2="'+xr+'" y1="'+ym(p)+'" y2="'+ym(p)+'" stroke="'+(p===.5?'#999':'#E6E6E2')+'" '+(p===.5?'stroke-dasharray="4 3"':'')+'/><text x="'+(f.L+38)+'" y="'+(ym(p)+4)+'" text-anchor="end" class="t-muted t-small">'+l+'</text>');
+  g += '<line x1="'+(f.L+44)+'" x2="'+xr+'" y1="'+(f.T+f.ph)+'" y2="'+(f.T+f.ph)+'" stroke="#8a8a8a"/>';
+  [0.5,0.75,1,1.5,2].forEach(m => g += '<text x="'+xm(m)+'" y="'+(f.T+f.ph+16)+'" text-anchor="middle" class="t-muted t-small">×'+m+'</text>');
+  g += '<text x="'+(f.W/2)+'" y="'+(f.H-4)+'" text-anchor="middle" class="t-muted t-small">combined spread relative to now (probability on a logit scale)</text>';
+  g += '<path d="'+xs.map((m,i) => (i?'L':'M')+xm(m).toFixed(1)+' '+ym(CR.Phi(k.muD/(m*k.sigD))).toFixed(1)).join('')+'" fill="none" stroke="#222" stroke-width="2.2"/>';
+  const p2 = CR.Phi(k.muD/(1.5*k.sigD));
+  g += '<circle cx="'+xm(1.5)+'" cy="'+ym(p2)+'" r="4.5" fill="#fff" stroke="#222" stroke-width="2"/><text class="lbl t-small" x="'+(xm(1.5)+8)+'" y="'+(ym(p2)+(k.muD<0?14:-8))+'">spread ×1.5: '+pct(p2)+'</text>';
+  g += '<circle cx="'+xm(1)+'" cy="'+ym(k.p)+'" r="6" fill="var(--colA)" stroke="#fff" stroke-width="2"/><text class="lbl t-small" x="'+(xm(1)-9)+'" y="'+(ym(k.p)+(k.muD<0?-9:16))+'" text-anchor="end" fill="var(--colA)" font-weight="700">now: '+pct(k.p)+'</text>';
+  host.innerHTML = '<svg viewBox="0 0 '+f.W+' '+f.H+'" width="'+f.W+'" height="'+f.H+'" role="img" aria-label="Success probability against the assumed spread">'+g+'</svg>';
+  cap.innerHTML = Math.abs(k.muD) < 0.005 ? 'With equal medians the spread does not matter: <i class="m">p</i> is 50 %.' :
+    'More spread pulls <i class="m">p</i> towards 50 %: with the same medians, a wider spread '+(k.muD<0?'raises':'lowers')+' <i class="m">p</i>. A tail probability depends on the assumed spread, not only on the medians.';
+  $('extra-wrap').hidden = false;
+}
+
+function renderCalc(){
+  const h = $('calc');
+  if (tab === 'control'){
+    const m = CR.mixture(S.c, S.r, S.fail.med, S.q), e = m.eff, fl = m.fail;
+    h.innerHTML =
+     '<div class="line"><span class="what">EFFECTIVE STATE</span><span class="eq"><i>z</i> = (ln '+medTxt(S.c.med)+' &minus; ln '+medTxt(S.r.med)+') / '+f2(e.sigD)+' = '+f2(e.z)+', &nbsp;'+sub('p','eff')+' = &Phi;('+f2(e.z)+') = <span class="res">'+pct(e.p)+'</span></span></div>'+
+     '<div class="line"><span class="what">FAILED STATE</span><span class="eq"><i>z</i> = (ln '+medTxt(S.c.med)+' &minus; ln '+medTxt(S.fail.med)+') / '+f2(fl.sigD)+' = '+f2(fl.z)+', &nbsp;'+sub('p','fail')+' = &Phi;('+f2(fl.z)+') = <span class="res">'+pct(fl.p)+'</span></span></div>'+
+     '<div class="line"><span class="what">LAW OF TOTAL PROBABILITY</span><span class="eq"><i>p</i> = <i>q</i>&thinsp;'+sub('p','eff')+' + (1 &minus; <i>q</i>)&thinsp;'+sub('p','fail')+' = '+S.q.toFixed(2)+'&middot;'+pct(e.p)+' + '+(1-S.q).toFixed(2)+'&middot;'+pct(fl.p)+'</span></div>'+
+     '<div class="line" style="border:0"><span class="what">SUCCESS PROBABILITY</span><span class="big" style="color:var(--colA)"><i class="m">p</i> = '+pct(m.p)+'</span> <span class="gl">'+one(m.p)+'</span></div>';
+    return;
+  }
+  const k = CR.margin(S.c, S.r);
+  h.innerHTML =
+   '<div class="line"><span class="what">LOG-MARGIN, MEAN (means subtract)</span><span class="eq">&mu;<sub>D</sub> = &mu;<sub>c</sub> &minus; &mu;<sub>r</sub> = ln '+medTxt(S.c.med)+' &minus; ln '+medTxt(S.r.med)+' = '+f2(CR.mu(S.c))+' &minus; '+f2(CR.mu(S.r))+' = <span class="res">'+f2(k.muD)+'</span></span></div>'+
+   '<div class="line"><span class="what">LOG-MARGIN, SPREAD (variances add, if independent)</span><span class="eq">&sigma;<sub>D</sub> = &radic;(&sigma;<sub>c</sub>&sup2; + &sigma;<sub>r</sub>&sup2;) = &radic;('+f2(S.c.sigma)+'&sup2; + '+f2(S.r.sigma)+'&sup2;) = <span class="res">'+f2(k.sigD)+'</span></span></div>'+
+   '<div class="line"><span class="what">MARGIN IN STANDARD DEVIATIONS</span><span class="eq"><i>z</i> = &mu;<sub>D</sub> / &sigma;<sub>D</sub> = '+f2(k.muD)+' / '+f2(k.sigD)+' = <span class="res">'+f2(k.z)+'</span></span></div>'+
+   '<div class="line" style="border:0"><span class="what">SUCCESS PROBABILITY OF ONE ATTEMPT</span><span class="big" style="color:var(--colA)"><i class="m">p</i> = &Phi;('+f2(k.z)+') = '+pct(k.p)+'</span> <span class="gl">'+one(k.p)+'</span></div>';
+}
+
+function renderText(){
+  const sh = $('shelf'), ta = $('takeaway');
+  if (tab === 'control'){
+    const m = CR.mixture(S.c, S.r, S.fail.med, S.q);
+    sh.innerHTML = '<b>Control reliability</b> <i class="m">q</i>: the probability that a control (or a person) works as assumed <i>when it is attacked</i>. If it does not, the resistance is that of the failed state.';
+    ta.innerHTML = 'At <i class="m">q</i> = '+S.q.toFixed(2)+' the failed state has '+pct(1-S.q)+' of the weight and '+pct(m.failShare)+' of the success probability: a small chance of control failure can dominate <i class="m">p</i>.';
+  } else {
+    sh.innerHTML = '<b>Capability</b> <i class="m">c</i><sub>A</sub>: the effort the adversary can bring (budget times efficiency). <b>Resistance</b> <i class="m">r</i><sub>S</sub>: the effort the attack needs against the system. The attack succeeds if <i class="m">c</i><sub>A</sub> &gt; <i class="m">r</i><sub>S</sub>.';
+    ta.innerHTML = '<i class="m">p</i> is the tail of the log-margin above 0, not the overlap of the two curves.';
+  }
+}
+
+function renderHints(){
+  $('overlap-toggle').hidden = tab !== 'success';
+  $('card-f').hidden = $('card-q').hidden = tab !== 'control';
+  $('t-r').innerHTML = tab === 'control' ? 'Resistance, control effective' : 'Resistance <i class="m">r</i><sub>S</sub>';
+  $('g-r').textContent = tab === 'control' ? 'spread applies to both states' : 'what the attack needs';
+  $('sw-r').className = 'sw' + (tab === 'control' ? '' : ' dash');
+  $('h-effort').innerHTML = (tab === 'control' ? 'Efforts <span class="gl">resistance is a mixture of two states, drawn with their weights</span>' : 'Two efforts <span class="gl">on a logarithmic axis</span>');
+}
+
+function render(){
+  Object.values(ctl).forEach(c => c.sync());
+  if (MODS[tab]) { MODS[tab].render(); if (ex) updateBannerLive(); return; }
+  [['c.med','ctl-c'],['r.med','ctl-r'],['fail.med','ctl-f']].forEach(([id]) => { const d = $('d-'+id); if (d) d.innerHTML = '&mu; = ln '+medTxt(get(id))+' = '+f2(Math.log(get(id))); });
+  renderHints(); renderEffort(); renderMargin(); renderExtra(); renderCalc(); renderText(); renderChips();
+  if (ex) updateBannerLive();
+}
+
+/* ---------- presets ---------- */
+const PRESETS = {
+  success: [ ['Opportunistic vs effective control', {c:{med:3,sigma:1},r:{med:40,sigma:.7}}], ['Design known (12 h) vs effective control', {c:{med:12,sigma:1},r:{med:40,sigma:.7}}], ['Targeted vs effective control', {c:{med:100,sigma:1},r:{med:40,sigma:.7}}],
+             ['Opportunistic vs failed control', {c:{med:3,sigma:1},r:{med:4,sigma:.7}}], ['Equal medians', {c:{med:40,sigma:1},r:{med:40,sigma:.7}}] ],
+  control: [ ['q = 1 (as designed)', {q:1}], ['q = 0.95', {q:.95}], ['q = 0.85', {q:.85}], ['q = 0.5', {q:.5}] ]
+};
+function renderChips(){
+  const host = $('chips'); host.innerHTML = '';
+  (PRESETS[tab] || []).forEach(([label, v], i) => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.disabled = !!ex;
+    b.title = ex ? 'Presets are off during an exercise' : ''; b.addEventListener('click', () => { Object.keys(v).forEach(k => { if (typeof v[k] === 'object') Object.assign(S[k], v[k]); else S[k] = v[k]; }); render(); }); host.appendChild(b); });
+  $('card-presets').hidden = tab === 'exercises';
+}
+
+/* ---------- dragging (pointer events; sliders remain the baseline) ---------- */
+function xToLn(host, e){ const r = host.querySelector('svg').getBoundingClientRect(); return host._geom.lx(e.clientX - r.left); }
+(function(){
+  const host = $('effort'); let cur = null;
+  host.addEventListener('pointerdown', e => {
+    const h = e.target.closest('[data-h]'); if (!h || locked.has(h.dataset.h)) return;
+    cur = { id: h.dataset.h, k: h.dataset.k, mu: +h.dataset.mu };
+    frozen = { effort: yStepFromDom(), margin: null }; frozen.margin = marginStep();
+    try { host.setPointerCapture(e.pointerId); } catch (_) {}
+    e.preventDefault();
+  });
+  host.addEventListener('pointermove', e => { if (!cur) return; applyDrag(cur, xToLn(host, e)); render(); });
+  const end = () => { if (cur){ cur = null; frozen = null; render(); } };
+  host.addEventListener('pointerup', end); host.addEventListener('pointercancel', end);
+  host.addEventListener('keydown', e => {
+    const h = e.target.closest && e.target.closest('[data-h]'); if (!h || locked.has(h.dataset.h)) return;
+    const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 0; if (!dir) return;
+    e.preventDefault(); const big = e.shiftKey ? 4 : 1, id = h.dataset.h, sig = id.endsWith('sigma');
+    set(id, sig ? get(id) + dir*0.05*big : get(id)*Math.pow(1.05, dir*big)); render();
+    const again = host.querySelector('[data-h="'+id+'"]'); if (again) again.focus();
+  });
+})();
+function applyDrag(cur, l){
+  if (cur.k === 'mu') set(cur.id, Math.exp(l));
+  else set(cur.id, l - Math.log(get(cur.id.replace('sigma','med'))));
+}
+function yStepFromDom(){ const c = components(); return yStep(Math.max(...c.map(x => x.w*CR.normPdf(x.mu,x.mu,x.s)))); }
+function marginStep(){
+  const k = tab==='control' ? CR.mixture(S.c,S.r,S.fail.med,S.q) : CR.margin(S.c,S.r);
+  const parts = tab==='control' ? [{w:S.q,mu:k.eff.muD,s:k.eff.sigD},{w:1-S.q,mu:k.fail.muD,s:k.fail.sigD}] : [{w:1,mu:k.muD,s:k.sigD}];
+  return yStep(Math.max(...linspace(-D_MAX,D_MAX,360).map(x => parts.reduce((a,p) => a + p.w*CR.normPdf(x,p.mu,p.s),0))));
+}
+
+/* ---------- the four tabs of lecture 4 (tabs4.js) ---------- */
+const MODS = {};
+if (T4) {
+  const api = { S: () => S, get, set, ctl, locked: () => locked, inEx: () => !!ex, render: () => render(), setTab: t => setTab(t), $, frame, path, linspace, yStep, num, medTxt, f2, pct, clone };
+  const made = T4.create(api).modules;
+  Object.keys(made).forEach(k => { const d = document.createElement('div'); d.id = 'mod-' + k; d.hidden = true; $('view-mod').appendChild(d); made[k].mount(d); MODS[k] = made[k]; });
+}
+
+/* ---------- tabs and url ---------- */
+function setTab(t, silent){
+  tab = t;
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  const isMod = !!MODS[t];
+  $('view-calc').hidden = t === 'exercises' || isMod; $('view-ex').hidden = t !== 'exercises'; $('view-mod').hidden = !isMod; $('foot').hidden = t === 'exercises' || isMod; $('lede-main').hidden = isMod;
+  Object.keys(MODS).forEach(k => { $('mod-' + k).hidden = k !== t; });
+  if (t === 'exercises') { renderChips(); renderExList(); } else render();
+  if (!silent) writeHash();
+}
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+$('overlap').addEventListener('change', render);
+function writeHash(){ const h = '#tab=' + tab + (ex ? '&ex=' + ex.def.id : ''); try { history.replaceState(null, '', h); } catch (_) { location.hash = h; } }
+window.addEventListener('resize', () => { if (tab !== 'exercises') render(); });
+
+/* ---------- exercises ---------- */
+const TABLABEL = { success:'success probability', control:'control may fail', lifecycle:'lifecycle race', search:'search', backlog:'backlog', prioritise:'prioritise', containment:'containment (4b)' };
+function renderExList(){
+  const host = $('exlist'); host.innerHTML = '';
+  (window.CR_EXERCISES || []).forEach(d => { const b = document.createElement('button');
+    b.innerHTML = '<span class="lv">'+d.level+' &middot; '+(TABLABEL[d.tab] || d.tab)+'</span><div class="ti">'+d.title+'</div><span>'+(d.blurb || d.prompt.replace(/<[^>]+>/g,'').split('. ')[0] + '.')+'</span><span class="go">Start →</span>';
+    b.addEventListener('click', () => startExercise(d.id)); host.appendChild(b); });
+}
+function startExercise(id){
+  const d = (window.CR_EXERCISES || []).find(x => x.id === id); if (!d) return;
+  ex = { def: d, picked: null, done: false, shown: {} };
+  S = merge(clone(BASE), clone(d.setup)); locked = new Set(d.locked || []);
+  setTab(d.tab, true); renderBanner(); writeHash(); window.scrollTo(0, 0);
+}
+function closeExercise(){ ex = null; locked = new Set(); $('banner').hidden = true; render(); writeHash(); }
+function renderBanner(){
+  const b = $('banner'), d = ex.def; b.hidden = false;
+  let h = '<div class="tag">EXERCISE &middot; '+d.title.toUpperCase()+'</div><div>'+d.prompt+'</div>';
+  if (d.kind === 'predict') h += '<div style="margin-top:8px"><b>Predict first.</b> '+d.question+'</div>' + d.options.map((o,i) => '<label class="opt"><input type="radio" name="opt" value="'+i+'"> '+o+'</label>').join('');
+  h += '<div class="btns"><button class="btn primary" id="b-check">'+(d.kind === 'predict' ? 'Reveal' : 'Check')+'</button>' +
+       (d.hint ? '<button class="btn" id="b-hint">Hint</button>' : '') + (d.solution ? '<button class="btn" id="b-sol">Solution</button>' : '') +
+       '<button class="btn" id="b-reset">Reset</button><button class="btn" id="b-close">Close</button></div><div class="fb" id="fb" aria-live="polite"></div><div class="more" id="more"></div>';
+  b.innerHTML = h;
+  $('b-check').onclick = checkExercise; $('b-reset').onclick = () => startExercise(d.id); $('b-close').onclick = closeExercise;
+  if ($('b-hint')) $('b-hint').onclick = () => { ex.shown.hint = !ex.shown.hint; showMore(); };
+  if ($('b-sol')) $('b-sol').onclick = () => { ex.shown.sol = !ex.shown.sol; showMore(); };
+  showMore();
+}
+function showMore(){
+  const m = $('more'), d = ex.def; let h = '';
+  if (ex.shown.hint) h += '<div><b>Hint.</b> '+d.hint+'</div>';
+  if (ex.shown.sol){ const s = d.solution(S, CR); h += '<div style="margin-top:6px"><b>Solution.</b> '+s.text+' <button class="btn" id="b-apply">Apply to the calculator</button></div>'; }
+  if (ex.explainHtml) h += '<div style="margin-top:6px">'+ex.explainHtml+'</div>';
+  m.innerHTML = h;
+  if ($('b-apply')) $('b-apply').onclick = () => { const s = d.solution(S, CR); Object.keys(s.apply).forEach(k => set(k, s.apply[k])); render(); };
+}
+function checkExercise(){
+  const d = ex.def, fb = $('fb');
+  if (d.kind === 'predict'){
+    const sel = document.querySelector('input[name=opt]:checked'); if (!sel){ fb.className = 'fb no'; fb.textContent = 'Pick an answer first.'; return; }
+    const right = d.answer(S, CR), ok = +sel.value === right;
+    fb.className = 'fb ' + (ok ? 'ok' : 'no'); fb.textContent = (ok ? '✓ Correct: ' : 'Not quite: ') + d.options[right] + '.';
+    Object.keys(d.reveal).forEach(k => { const [a,b] = k.split('.'); if (b) S[a][b] = d.reveal[k]; else S[a] = d.reveal[k]; });   // reveal first: explain() sees the revealed state
+    ex.explainHtml = d.explain(S, CR);
+    render(); showMore(); return;
+  }
+  updateBannerLive(true);
+}
+function updateBannerLive(show){
+  if (!ex || ex.def.kind === 'predict') return; const fb = $('fb'), r = ex.def.check(S, CR);
+  if (r.ok){ fb.className = 'fb ok'; fb.textContent = '✓ ' + r.msg; ex.done = true; }
+  else if (show || ex.done){ fb.className = 'fb no'; fb.textContent = r.msg; }
+}
+
+/* ---------- boot ---------- */
+const hp = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+const t0 = hp.get('tab');
+render();
+if (t0 === 'control' || t0 === 'exercises' || t0 === 'success' || MODS[t0]) setTab(t0, true); else setTab('success', true);
+if (hp.get('ex')) startExercise(hp.get('ex'));
+window.__CR = { get S(){ return S; }, set, render, setTab, startExercise, get tab(){ return tab; } };   // for tests
+})();
+</script>
+</body>
+</html>
