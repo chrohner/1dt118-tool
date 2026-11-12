@@ -1,9 +1,9 @@
 {
   "sourceRepository": "https://github.com/uu-core/uu-1dt118",
   "sourceDirectory": "tools/attack-flow-companion",
-  "sourceCommit": "912f92791531077c29b3013afb4ffa463d3faec4",
-  "sourceDirty": true,
-  "sourceStatus": "M .github/workflows/attack-graph-pages.yml\n M tools/attack-flow-companion/README.md\n M tools/attack-flow-companion/docs/GITHUB_PAGES.md\n M tools/attack-flow-companion/package.json\n?? tools/attack-flow-companion/scripts/prepare-deployment.mjs",
+  "sourceCommit": "39bd894263b223fb4a92d81464b01bba2ca3b60a",
+  "sourceDirty": false,
+  "sourceStatus": null,
   "version": "0.3.0",
-  "builtAt": "2026-11-12T11:51:04.979Z"
+  "builtAt": "2026-11-12T11:57:36.260Z"
 }
