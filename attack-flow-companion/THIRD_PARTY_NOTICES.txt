@@ -1,0 +1,16 @@
+Attack Graph Lab / M1a companion prototype
+
+Browser layout dependencies:
+  @dagrejs/dagre 3.1.3 — MIT licence
+  @dagrejs/graphlib 4.0.6 — MIT licence
+Both carry Copyright (c) 2012-2014 Chris Pettitt.
+The complete MIT notice is provided in LICENSE-DAGRE.txt.
+
+The synthetic portal is course material from tools/attack-graph-pilot.
+Its included Attack Flow extension definition/identity metadata originates from
+the MITRE Center for Threat-Informed Defense Attack Flow project, Apache-2.0.
+Existing attribution and external references remain in the bundled JSON.
+See LICENSE-ATTACK-FLOW.txt and https://github.com/center-for-threat-informed-defense/attack-flow.
+
+No upstream Attack Flow GUI code is incorporated into this companion.
+Attack Flow Builder is used separately as an authoring tool.
