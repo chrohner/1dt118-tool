@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attack Graph Lab · Guide</title>
+<meta name="description" content="How to use the Attack Graph Lab, the M1a Attack Flow companion of 1DT118.">
+<style>
+:root{--ink:#183b35;--text:#243c38;--green:#286b56;--line:#dce2d8;--muted:#64756d;--bg:#f5f5ef;--card:#fcfdf8;--ui:#e8eddf}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 16px 60px}
+h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:34px;line-height:1.15;color:var(--ink);margin:6px 0 10px}
+h2{font-size:21px;color:var(--ink);margin:38px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+h3{font-size:16px;color:var(--ink);margin:24px 0 6px}
+p,li{max-width:72ch}
+a{color:var(--green)}
+.eyebrow{font-size:11px;font-weight:750;letter-spacing:1.6px;color:var(--green);margin:0}
+.lead{font-size:16px}
+.ui{background:var(--ui);border:1px solid #d5dfcc;border-radius:4px;padding:0 5px;font-weight:600;color:var(--ink);white-space:nowrap}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:12px 18px;margin:20px 0}
+nav.toc ol{margin:6px 0;padding-left:20px;columns:2;column-gap:28px}
+table{border-collapse:collapse;width:100%;margin:10px 0 14px;background:var(--card);font-size:14px}
+th,td{text-align:left;vertical-align:top;border-bottom:1px solid var(--line);padding:7px 9px}
+thead th{font-size:12px;color:var(--muted);font-weight:600}
+.note{background:#fff3dc;border:1px solid #e5d7b4;border-radius:5px;padding:9px 13px}
+ol.steps>li{margin:6px 0}
+footer{margin-top:40px;color:var(--muted);font-size:12px}
+@media (max-width:640px){nav.toc ol{columns:1}h1{font-size:28px}.ui{white-space:normal}}
+@media print{body{background:white;font-size:11pt}nav.toc{display:none}h2{break-after:avoid}a{color:inherit}}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">ATTACK GRAPH LAB · 1DT118 · M1a companion · version 0.5.1</p>
+<h1>Guide to the Attack Graph Lab</h1>
+<p class="lead">The Attack Graph Lab is a browser tool for the attack graphs of module M1a. You open or import a flow of facts and actions, state your assumptions, execute successful actions, find the cheapest route to a goal and compare controls. Everything runs in your browser: no installation, no account, and your files stay on your device.</p>
+<p>This page is the reference. The slide deck <em>Using the Attack Graph Lab</em> walks through the same steps with screenshots.</p>
+
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol>
+<li><a href="#start">Getting started</a></li>
+<li><a href="#screen">The screen at a glance</a></li>
+<li><a href="#tour">A first tour: the portal example</a></li>
+<li><a href="#import">Import your own flow</a></li>
+<li><a href="#setup">Check the setup</a></li>
+<li><a href="#execute">Execute actions yourself</a></li>
+<li><a href="#analyse">Find the cheapest route</a></li>
+<li><a href="#controls">Model a control and compare</a></li>
+<li><a href="#states">State graph and replay</a></li>
+<li><a href="#advanced">Optional analyses (Advanced)</a></li>
+<li><a href="#save">Save, reopen and export</a></li>
+<li><a href="#results">Reading the results</a></li>
+<li><a href="#limits">Limits and troubleshooting</a></li>
+<li><a href="#readings">Which reading goes with which feature</a></li>
+</ol></nav>
+
+<h2 id="start">1. Getting started</h2>
+<ol class="steps">
+<li>Open <a href="https://chrohner.github.io/1dt118-tool/attack-flow-companion/">chrohner.github.io/1dt118-tool/attack-flow-companion/</a> in a current Chrome, Edge or Firefox. Do not open a downloaded copy with <code>file://</code>; the tool needs a web address.</li>
+<li>Click <span class="ui">Portal example</span> to load the university portal model from the lecture. Clicking it again resets the example.</li>
+<li>Click <span class="ui">Save project</span> whenever you want to keep your work. The browser's memory is not a backup.</li>
+</ol>
+<p>The <span class="ui">Guide</span> button in the top bar opens this page.</p>
+
+<h2 id="screen">2. The screen at a glance</h2>
+<table>
+<thead><tr><th>Area</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Top bar</td><td><span class="ui">Portal example</span>, <span class="ui">Open JSON / project</span>, <span class="ui">Save project</span>, <span class="ui">Export report</span>, <span class="ui">Guide</span>, and <span class="ui">Advanced ▾</span> for optional analyses.</td></tr>
+<tr><td><span class="ui">Explore an example</span></td><td>Supplied flows: incident flows from MITRE's Attack Flow examples, and examples from the M1a readings (titles start with "Reading ·"). Choose one, then <span class="ui">Load example</span>.</td></tr>
+<tr><td>Scenario toolbar</td><td><span class="ui">Scenario</span> selects the scenario you work on; <span class="ui">Duplicate current</span> copies it under the name typed in <span class="ui">Name a comparison…</span>. For the portal only, <span class="ui">Course intervention</span> adds prepared controls.</td></tr>
+<tr><td>Graph (left)</td><td><span class="ui">Dependency graph</span>: facts (rectangles), actions (circles), AND/OR joins (diamonds). <span class="ui">State graph</span>: the states an execution can pass through. Zoom with − / + and <span class="ui">Fit</span>.</td></tr>
+<tr><td>Tabs (right)</td><td><span class="ui">1 · Setup</span> assumptions; <span class="ui">2 · Execute</span> step through actions; <span class="ui">3 · Analyse</span> cheapest route and comparisons; <span class="ui">4 · Probability</span> only when switched on.</td></tr>
+</tbody></table>
+
+<h2 id="tour">3. A first tour: the portal example</h2>
+<ol class="steps">
+<li><span class="ui">Portal example</span>, then <span class="ui">1 · Setup</span>: the goal is <em>X's records read</em>; read the initial facts and the action efforts (reset 1 h, phishing 3 h, login 1 h, read 0 h, injection 6 h).</li>
+<li><span class="ui">2 · Execute</span>: select <em>login</em>. It is blocked; <span class="ui">Required inputs</span> shows that <em>credential held</em> is missing. Execute <em>reset</em>, then <em>login</em> and <em>read</em>; the goal holds.</li>
+<li><span class="ui">3 · Analyse</span> → <span class="ui">Find minimum effort</span>: 2 h through reset, login, read.</li>
+<li><span class="ui">Course intervention</span>: choose <em>verification</em>, <em>mfa</em> and <em>mfa patch</em> in turn; each becomes a new scenario.</li>
+<li><span class="ui">Analyse scenarios</span>: 2 h, 4 h (phishing), 6 h (injection), goal unreachable.</li>
+<li><span class="ui">Save project</span>, then reopen the file with <span class="ui">Open JSON / project</span>.</li>
+</ol>
+
+<h2 id="import">4. Import your own flow</h2>
+<ol class="steps">
+<li>Draw the flow in the online <a href="https://center-for-threat-informed-defense.github.io/attack-flow/ui/">Attack Flow Builder</a>. Facts are <em>conditions</em>, actions are <em>actions</em>, and joins are AND/OR <em>operators</em>.</li>
+<li>In the Builder, use <strong>File → Export STIX File</strong> (the documentation may call it <em>Publish Attack Flow</em>). This gives a <code>.json</code> file. Also keep the Builder's own <code>.afb</code> file: you need it to edit the drawing later, and the Lab cannot open it.</li>
+<li>In the Lab, click <span class="ui">Open JSON / project</span> and choose the <code>.json</code> file.</li>
+<li>Read the import line above the graph:
+<table><tbody>
+<tr><td><strong>✓ Import profile checked</strong></td><td>The flow can be executed and analysed.</td></tr>
+<tr><td><strong>⚠ incoming-edge choice(s) required in Setup</strong></td><td>Some node has several inputs without an AND/OR operator. Choose AND or OR in <span class="ui">Interpret incoming edges</span>.</td></tr>
+<tr><td><strong>⚠ blocking compatibility issue(s) — preview only</strong></td><td>The flow uses something the Lab does not support, such as failure branches. You can look at it but not execute it; change the flow in the Builder.</td></tr>
+</tbody></table></li>
+</ol>
+<p class="note">An import starts with <strong>automatic assumptions</strong> so that you can explore at once: starting conditions are true, actions without inputs may start, joins without an operator are OR, the goal is the node farthest downstream, and every missing effort is 1 hour. These are placeholders. Check them in Setup before you draw any conclusion.</p>
+<p>To change the drawing itself, edit the <code>.afb</code> file in the Builder and import a new export. A new import does not copy efforts across by name, so save your project first.</p>
+
+<h2 id="setup">5. Check the setup</h2>
+<p>Everything in <span class="ui">1 · Setup</span> belongs to the current scenario.</p>
+<table>
+<thead><tr><th>Field</th><th>What to check</th></tr></thead>
+<tbody>
+<tr><td><span class="ui">Goal</span></td><td>The fact (or completed action) the attacker wants.</td></tr>
+<tr><td><span class="ui">Interpret incoming edges</span></td><td>Only when some node has several unlabelled inputs: AND if all are needed, OR if any one suffices.</td></tr>
+<tr><td><span class="ui">Facts true initially</span></td><td>Ticked facts hold from the start. An unticked fact is not established: that is your assumption, not a proof.</td></tr>
+<tr><td><span class="ui">Entry actions with no prerequisites</span></td><td>Only when the flow has actions without inputs: tick those the attacker may start with. They still cost effort.</td></tr>
+<tr><td><span class="ui">Scenario assumptions</span></td><td>Write down what this scenario assumes.</td></tr>
+<tr><td><span class="ui">Action effort</span></td><td><span class="ui">Available</span>: untick to take an action out of this scenario. The effort column: reference-adversary hours (or the example's own unit), not elapsed time and not probabilities. Record where a number comes from in <span class="ui">Effort basis / evidence</span> (in <span class="ui">2 · Execute</span>, below the selected action).</td></tr>
+</tbody></table>
+<p>Changing any of these resets the execution and clears results for that scenario.</p>
+
+<h2 id="execute">6. Execute actions yourself</h2>
+<ol class="steps">
+<li>Open <span class="ui">2 · Execute</span>. Under <span class="ui">Explore an action</span>, each action is marked <em>enabled</em>, <em>blocked</em>, <em>off</em> or <em>✓ done</em>. You can also click a node in the graph.</li>
+<li>The inspector shows <span class="ui">Required inputs</span>, each marked as holding or missing, and <span class="ui">Direct effects on success</span>.</li>
+<li>Click <strong>Execute … successfully</strong> to apply an enabled action. Every action succeeds by assumption and runs at most once; facts stay true.</li>
+<li><span class="ui">Execution history</span> lists what each step established and the cumulative effort. Use <span class="ui">Undo</span> or <span class="ui">Reset</span>.</li>
+</ol>
+
+<h2 id="analyse">7. Find the cheapest route</h2>
+<ol class="steps">
+<li>In <span class="ui">3 · Analyse</span>, write <span class="ui">Your prediction (optional)</span> first.</li>
+<li><span class="ui">Check reachability</span> answers yes or no. <span class="ui">Find minimum effort</span> searches for the cheapest route, from the initial facts (not from your manual execution).</li>
+<li>The result gives the minimum and a <em>witness</em>: one cheapest sequence of successful actions with cumulative effort. Shared work is charged once.</li>
+<li><span class="ui">Replay witness on graph</span> applies the witness in <span class="ui">2 · Execute</span>, so you can inspect each step.</li>
+</ol>
+
+<h2 id="controls">8. Model a control and compare</h2>
+<ol class="steps">
+<li>Type a name in <span class="ui">Name a comparison…</span>, for example "patch web server", and click <span class="ui">Duplicate current</span>. The new scenario is selected; the original stays unchanged.</li>
+<li>In <span class="ui">1 · Setup</span>, change one thing that represents the control:
+<ul>
+<li>untick a fact in <span class="ui">Facts true initially</span> when the control removes a condition (patching makes "vulnerability present" false);</li>
+<li>untick <span class="ui">Available</span> when the control removes an action altogether;</li>
+<li>raise an effort when the control makes an action harder but still possible.</li>
+</ul></li>
+<li>Note the change in <span class="ui">Scenario assumptions</span>.</li>
+<li>Under <span class="ui">Compare your scenarios</span>, click <span class="ui">Analyse scenarios</span>. The table lists each scenario's changes, result and witness.</li>
+</ol>
+<p>Change one assumption per scenario, so that a difference in the result has one cause. For the portal, <span class="ui">Course intervention</span> creates prepared controls from the first scenario.</p>
+
+<h2 id="states">9. State graph and replay</h2>
+<h3>State graph</h3>
+<p>Click <span class="ui">State graph</span> above the drawing. Each box is a state, the set of facts held (I = initial facts); each arrow is a successful action. Your executed steps are numbered; gold boxes are goal states; faded boxes can no longer reach the goal.</p>
+<ul>
+<li><strong>Blocked transitions.</strong> By default the graph is drawn with all inputs available, and transitions that the current scenario blocks are dashed and marked ✗. Boxes that this scenario cannot reach are dashed. A red line lists what the scenario withholds.</li>
+<li><span class="ui">View options</span> (folded): <span class="ui">Stop at the first goal state</span>, <span class="ui">Only states that can still reach the goal</span>, and <span class="ui">Draw blocked transitions (dashed) against</span> all inputs, a named scenario, or nothing.</li>
+<li>Above 80 states the view shows counts per layer instead of a drawing.</li>
+</ul>
+<h3>Replay</h3>
+<p>Once you have executed actions or found a minimum, the <span class="ui">Replay</span> bar appears above the graph. Choose the current execution or the effort witness, then <span class="ui">▶ Play</span>; the step buttons move one action at a time and <span class="ui">Speed</span> sets the pace. Replay only animates: it does not change your execution or results. With reduced motion set in your operating system, use the step buttons.</p>
+
+<h2 id="advanced">10. Optional analyses (Advanced)</h2>
+<p>These are hidden until you switch them on under <span class="ui">Advanced ▾</span>. Each has its own stated rules, and the setting is saved with your project.</p>
+<table>
+<thead><tr><th>Option</th><th>Where it appears</th><th>Question it answers</th></tr></thead>
+<tbody>
+<tr><td><span class="ui">Path counting</span></td><td><span class="ui">3 · Analyse</span>: choose a <span class="ui">Convention</span>, then <span class="ui">Count</span></td><td>How many attack paths are there, and how long are they? Graph paths, executable sequences and minimal attacks give different counts: choose the convention before you count.</td></tr>
+<tr><td><span class="ui">Mean effort to failure</span></td><td><span class="ui">3 · Analyse</span>: <span class="ui">Compute METF</span></td><td>Expected effort for an attacker who does not know the graph and tries every available action at once. Efforts are read as means of random efforts. It is never above the minimum effort, which assumes an attacker who knows the whole graph.</td></tr>
+<tr><td><span class="ui">Show search effort</span></td><td>Under the minimum-effort result</td><td>How many states the exact search explored (not the size of the state graph).</td></tr>
+<tr><td><span class="ui">Probability tab</span></td><td><span class="ui">4 · Probability</span>: enter values, then <span class="ui">Compute probability</span></td><td>Probability that the goal is reached when each action succeeds independently with the probability you enter. Never combined with effort.</td></tr>
+</tbody></table>
+
+<h2 id="save">11. Save, reopen and export</h2>
+<ul>
+<li><span class="ui">Save project</span> downloads one <code>.json</code> file with the imported flow, all scenarios and assumptions, and a description of the analysis rules. Reopen it with <span class="ui">Open JSON / project</span>; results are recomputed, not trusted from the file.</li>
+<li><span class="ui">Export report</span> downloads a readable Markdown summary: assumptions, efforts, results, witnesses, the analysis rules and the readings behind the conventions used.</li>
+<li>If you replaced a project by mistake, <span class="ui">Restore previous project</span> (shown after an import) brings back the one before. Do not rely on it: save first.</li>
+</ul>
+
+<h2 id="results">12. Reading the results</h2>
+<table>
+<thead><tr><th>Result</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><strong>EXACT MINIMUM</strong></td><td>No cheaper route exists under the current assumptions. The witness is one cheapest route; others may tie.</td></tr>
+<tr><td><strong>Goal unreachable</strong></td><td>No sequence of available actions reaches the goal under the current assumptions. This says nothing about routes the model leaves out.</td></tr>
+<tr><td><strong>Search incomplete</strong></td><td>A limit stopped the search. It is neither a minimum nor a proof of unreachability.</td></tr>
+<tr><td><strong>preview only</strong></td><td>The import uses unsupported constructs; see <a href="#import">section 4</a>.</td></tr>
+</tbody></table>
+<p>Every result is conditional on the model: facts persist, actions succeed and run once, efforts add. The tool makes no claim about real-world security.</p>
+
+<h2 id="limits">13. Limits and troubleshooting</h2>
+<table><tbody>
+<tr><td>Size</td><td>Flows up to 2 MiB, 500 STIX objects and 200 executable nodes. The search stops at 50,000 states or 5 seconds and then says incomplete.</td></tr>
+<tr><td>Not supported</td><td>Failure branches, negation (a fact becoming false), retries, and the Builder's <code>.afb</code> files.</td></tr>
+<tr><td>A button is greyed out</td><td>The setup is incomplete: check the goal, the incoming-edge choices and missing efforts in <span class="ui">1 · Setup</span>.</td></tr>
+<tr><td>An action stays blocked</td><td>Select it in <span class="ui">2 · Execute</span>; <span class="ui">Required inputs</span> names what is missing. It may also be unticked under <span class="ui">Available</span>.</td></tr>
+<tr><td>The state graph shows a table</td><td>More than 80 states: the view counts states instead of drawing them.</td></tr>
+<tr><td>Lost work</td><td>Save often. Reloading the page or importing another file replaces the current project.</td></tr>
+</tbody></table>
+
+<h2 id="readings">14. Which reading goes with which feature</h2>
+<table>
+<thead><tr><th>Feature</th><th>Reading</th></tr></thead>
+<tbody>
+<tr><td>Cheapest route (minimum effort)</td><td>Phillips and Swiler (1998), §1</td></tr>
+<tr><td>State graph</td><td>Phillips and Swiler (1998), §1; Sheyner et al. (2002)</td></tr>
+<tr><td>Blocked transitions, choosing controls</td><td>Jha, Sheyner and Wing (2002), §5</td></tr>
+<tr><td>Path counting</td><td>Idika and Bhargava (2012), §3.2</td></tr>
+<tr><td>Mean effort to failure</td><td>Ortalo, Deswarte and Kaâniche (1999), §§2.3–2.5</td></tr>
+<tr><td>Probability tab</td><td>Poolsappasit, Dewri and Ray (2012), §§4.1–4.4</td></tr>
+<tr><td>Why state graphs grow, and logical attack graphs</td><td>Ou et al. (2006), §1</td></tr>
+</tbody></table>
+<p>The course page says which readings are required and which are additional.</p>
+
+<footer>Attack Graph Lab 0.5.1 · analysis profile m1a-positive-1 · 1DT118 Cybersecurity Analysis, Uppsala University. Built on MITRE's Attack Flow format; see the licence files published with the tool.</footer>
+</main>
+</body>
+</html>
