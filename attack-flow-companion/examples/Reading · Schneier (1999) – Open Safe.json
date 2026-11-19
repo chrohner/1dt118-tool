@@ -1,0 +1,213 @@
+{
+  "kind": "m1a-companion-project",
+  "version": 1,
+  "profile": "m1a-positive-1",
+  "applicationVersion": "0.5.0",
+  "sourceText": "{\n  \"type\": \"bundle\",\n  \"id\": \"bundle--0238cf1d-3574-5ae9-8d95-f48b2e3b154e\",\n  \"objects\": [\n    {\n      \"type\": \"extension-definition\",\n      \"id\": \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\",\n      \"spec_version\": \"2.1\",\n      \"name\": \"Attack Flow\",\n      \"description\": \"Extends STIX 2.1 with features to create Attack Flows.\",\n      \"created\": \"2022-08-02T19:34:35.143Z\",\n      \"modified\": \"2022-08-02T19:34:35.143Z\",\n      \"created_by_ref\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"schema\": \"https://center-for-threat-informed-defense.github.io/attack-flow/stix/attack-flow-schema-2.0.0.json\",\n      \"version\": \"2.0.0\",\n      \"extension_types\": [\n        \"new-sdo\"\n      ]\n    },\n    {\n      \"type\": \"identity\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"created_by_ref\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"created\": \"2022-08-02T19:34:35.143Z\",\n      \"modified\": \"2022-08-02T19:34:35.143Z\",\n      \"name\": \"MITRE Center for Threat-Informed Defense\",\n      \"identity_class\": \"organization\"\n    },\n    {\n      \"type\": \"attack-flow\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-flow--460488fa-2136-5836-91f1-d3357dd57d32\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"schneier-safe\"\n        }\n      ],\n      \"name\": \"Schneier (1999) – Open Safe\",\n      \"description\": \"Course transcription for 1DT118 M1a. Source: Schneier, B. (1999). Attack Trees. Dr. Dobb's Journal, December 1999. Public copy https://www.schneier.com/academic/archives/1999/12/attack_trees.html (fetched 2026-11-18). Used: Fig. 2 'Possible Attacks' (P/I), Fig. 3 'Special Equipment Required' (SE/NSE), Fig. 4 'Cost of Attack' ($), Fig. 6 'Cheapest Attack Requiring No Special Equipment'. The web copy has no page numbers.\",\n      \"scope\": \"other\",\n      \"start_refs\": [\n        \"attack-action--26076791-973d-5bd7-aac6-6278f23eb63f\",\n        \"attack-action--3461af3f-a584-5a50-9097-4a3278dc434f\",\n        \"attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a\",\n        \"attack-action--75587b63-9990-560f-9580-1b37cc26fe9f\",\n        \"attack-action--447f7d6f-2194-554c-a056-a528de29c508\",\n        \"attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23\",\n        \"attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4\",\n        \"attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822\",\n        \"attack-action--12977d44-288e-5667-b19f-fb4cb650f71c\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--bbb35c28-cd5b-5293-986b-c6f7c23bf64f\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"open_safe\"\n        }\n      ],\n      \"description\": \"Open Safe (goal, OR)\"\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--a3d6e024-29b5-50f6-a864-efa82dbff8e2\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"learn_combo\"\n        }\n      ],\n      \"description\": \"Learn Combo (OR)\",\n      \"on_true_refs\": [\n        \"attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--706d2a00-9545-542f-bb42-8fdc10fdd34d\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"combo_from_target\"\n        }\n      ],\n      \"description\": \"Get Combo From Target (OR)\",\n      \"on_true_refs\": [\n        \"attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--0f84e52e-cbbe-52d2-b889-fb7716794a0f\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"eavesdrop\"\n        }\n      ],\n      \"description\": \"Eavesdrop (AND)\",\n      \"on_true_refs\": [\n        \"attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--5c58c74e-24c8-574e-9e4d-62ee149e147b\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"conversation_heard\"\n        }\n      ],\n      \"description\": \"Listen to Conversation done\",\n      \"on_true_refs\": [\n        \"attack-operator--4eae33da-634a-5319-9fa6-1b5df219c506\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--4dcf3397-2508-5227-b5aa-d9d9b083c9e1\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"target_stated_combo\"\n        }\n      ],\n      \"description\": \"Get Target to State Combo done\",\n      \"on_true_refs\": [\n        \"attack-operator--4eae33da-634a-5319-9fa6-1b5df219c506\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--26076791-973d-5bd7-aac6-6278f23eb63f\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"pick_lock\"\n        }\n      ],\n      \"name\": \"Pick Lock\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $30K\",\n      \"effect_refs\": [\n        \"attack-operator--cd5442fe-3374-56a2-a930-7929dfaa8db6\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--3461af3f-a584-5a50-9097-4a3278dc434f\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"cut_open_safe\"\n        }\n      ],\n      \"name\": \"Cut Open Safe\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $10K\",\n      \"effect_refs\": [\n        \"attack-operator--cd5442fe-3374-56a2-a930-7929dfaa8db6\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"install_improperly\"\n        }\n      ],\n      \"name\": \"Install Improperly\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $100K\",\n      \"effect_refs\": [\n        \"attack-operator--cd5442fe-3374-56a2-a930-7929dfaa8db6\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"open_with_combo\"\n        }\n      ],\n      \"name\": \"Open safe with learned combo\",\n      \"description\": \"structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0\",\n      \"effect_refs\": [\n        \"attack-operator--cd5442fe-3374-56a2-a930-7929dfaa8db6\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--75587b63-9990-560f-9580-1b37cc26fe9f\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"find_written_combo\"\n        }\n      ],\n      \"name\": \"Find Written Combo\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $75K\",\n      \"effect_refs\": [\n        \"attack-operator--7e1c02ea-a1b0-53e3-93f9-047a6b74c639\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"use_combo_from_target\"\n        }\n      ],\n      \"name\": \"Learn combo from target\",\n      \"description\": \"structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0\",\n      \"effect_refs\": [\n        \"attack-operator--7e1c02ea-a1b0-53e3-93f9-047a6b74c639\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--447f7d6f-2194-554c-a056-a528de29c508\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"threaten\"\n        }\n      ],\n      \"name\": \"Threaten\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $60K\",\n      \"effect_refs\": [\n        \"attack-operator--7a245fe3-8689-5a76-970d-f45953b0b5db\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"blackmail\"\n        }\n      ],\n      \"name\": \"Blackmail\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $100K\",\n      \"effect_refs\": [\n        \"attack-operator--7a245fe3-8689-5a76-970d-f45953b0b5db\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"bribe\"\n        }\n      ],\n      \"name\": \"Bribe\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $20K\",\n      \"effect_refs\": [\n        \"attack-operator--7a245fe3-8689-5a76-970d-f45953b0b5db\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"eavesdrop_to_combo\"\n        }\n      ],\n      \"name\": \"Combo obtained by eavesdropping\",\n      \"description\": \"structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0\",\n      \"effect_refs\": [\n        \"attack-operator--7a245fe3-8689-5a76-970d-f45953b0b5db\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"eavesdrop_combine\"\n        }\n      ],\n      \"name\": \"Eavesdrop (AND: combine both steps)\",\n      \"description\": \"AND node combine, cost 0; Fig. 4 prints Eavesdrop $60K = sum of its children\",\n      \"effect_refs\": [\n        \"attack-condition--0f84e52e-cbbe-52d2-b889-fb7716794a0f\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"listen_to_conversation\"\n        }\n      ],\n      \"name\": \"Listen to Conversation\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $20K\",\n      \"effect_refs\": [\n        \"attack-condition--5c58c74e-24c8-574e-9e4d-62ee149e147b\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--12977d44-288e-5667-b19f-fb4cb650f71c\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"get_target_to_state_combo\"\n        }\n      ],\n      \"name\": \"Get Target to State Combo\",\n      \"description\": \"Fig. 4 'Cost of Attack' (leaf value): $40K\",\n      \"effect_refs\": [\n        \"attack-condition--4dcf3397-2508-5227-b5aa-d9d9b083c9e1\"\n      ]\n    },\n    {\n      \"type\": \"attack-operator\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-operator--4eae33da-634a-5319-9fa6-1b5df219c506\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"and_eavesdrop_combine\"\n        }\n      ],\n      \"operator\": \"AND\",\n      \"effect_refs\": [\n        \"attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28\"\n      ]\n    },\n    {\n      \"type\": \"attack-operator\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-operator--cd5442fe-3374-56a2-a930-7929dfaa8db6\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"or_open_safe\"\n        }\n      ],\n      \"operator\": \"OR\",\n      \"effect_refs\": [\n        \"attack-condition--bbb35c28-cd5b-5293-986b-c6f7c23bf64f\"\n      ]\n    },\n    {\n      \"type\": \"attack-operator\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-operator--7e1c02ea-a1b0-53e3-93f9-047a6b74c639\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"or_learn_combo\"\n        }\n      ],\n      \"operator\": \"OR\",\n      \"effect_refs\": [\n        \"attack-condition--a3d6e024-29b5-50f6-a864-efa82dbff8e2\"\n      ]\n    },\n    {\n      \"type\": \"attack-operator\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-operator--7a245fe3-8689-5a76-970d-f45953b0b5db\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"or_combo_from_target\"\n        }\n      ],\n      \"operator\": \"OR\",\n      \"effect_refs\": [\n        \"attack-condition--706d2a00-9545-542f-bb42-8fdc10fdd34d\"\n      ]\n    }\n  ]\n}",
+  "sourceSha256": "7f7115b9a959dd0b22f7b0f4a6a763f10912fc1dccbb27b66c3ce5c0e31174c0",
+  "scenarios": [
+    {
+      "id": "01d070d6-2ad8-5cb3-a548-f92205788fc7",
+      "name": "Baseline (cost figure)",
+      "initialFacts": [],
+      "entryActions": [
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c"
+      ],
+      "goal": "attack-condition--bbb35c28-cd5b-5293-986b-c6f7c23bf64f",
+      "disabled": [],
+      "efforts": {
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f": "30000",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f": "10000",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a": "100000",
+        "attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade": "0",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f": "75000",
+        "attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4": "0",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508": "60000",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23": "100000",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4": "20000",
+        "attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9": "0",
+        "attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28": "0",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822": "20000",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c": "40000"
+      },
+      "notes": {
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f": "Fig. 4 'Cost of Attack' (leaf value): $30K",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f": "Fig. 4 'Cost of Attack' (leaf value): $10K",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a": "Fig. 4 'Cost of Attack' (leaf value): $100K",
+        "attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f": "Fig. 4 'Cost of Attack' (leaf value): $75K",
+        "attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508": "Fig. 4 'Cost of Attack' (leaf value): $60K",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23": "Fig. 4 'Cost of Attack' (leaf value): $100K",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4": "Fig. 4 'Cost of Attack' (leaf value): $20K",
+        "attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28": "AND node combine, cost 0; Fig. 4 prints Eavesdrop $60K = sum of its children",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822": "Fig. 4 'Cost of Attack' (leaf value): $20K",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c": "Fig. 4 'Cost of Attack' (leaf value): $40K"
+      },
+      "assumptions": "All leaf attacks available at the costs of Fig. 4.\nSource: Schneier, B. (1999). Attack Trees. Dr. Dobb's Journal, December 1999. Public copy https://www.schneier.com/academic/archives/1999/12/attack_trees.html (fetched 2026-11-18). Used: Fig. 2 'Possible Attacks' (P/I), Fig. 3 'Special Equipment Required' (SE/NSE), Fig. 4 'Cost of Attack' ($), Fig. 6 'Cheapest Attack Requiring No Special Equipment'. The web copy has no page numbers.\nTranscription notes: Values transcribed from the figure images (GIFs) on the public page. Fig. 4 prints the root as $10K and highlights Cut Open Safe; the text says OR nodes take the cheapest child and AND nodes the sum of their children. Scenario 1 expected = paper (Fig. 4). Scenario 2: Fig. 2 gives only P/I (root P, two possible attacks: cut open safe, bribe); the cost 10000 combines Fig. 2 with Fig. 4 costs and is my computation, not printed. Scenario 3: Fig. 6 prints the root as 'NSE/$20K' and the text says the cheapest attack needing no special equipment is bribing the person who knows the combination; this matches. Fig. 3 marks all leaves (SE: Pick Lock, Cut Open Safe, Listen to Conversation; all other leaves NSE), so the scenario is complete. Modelling choices: one fact per internal node; the cost-0 'open_with_combo', 'use_combo_from_target' and 'eavesdrop_to_combo' actions only carry an OR child up to its OR parent; the witness lists them because they are needed for reachability. Fig. 5 (attacks under $100K) and Figs. 7-8 (PGP, general system) were not transcribed.",
+      "prediction": "",
+      "reviewed": true,
+      "automatic": false,
+      "joins": {}
+    },
+    {
+      "id": "998ddfa0-3816-5b7c-a3f5-040b6c094461",
+      "name": "Possible attacks only",
+      "initialFacts": [],
+      "entryActions": [
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c"
+      ],
+      "goal": "attack-condition--bbb35c28-cd5b-5293-986b-c6f7c23bf64f",
+      "disabled": [
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c"
+      ],
+      "efforts": {
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f": "30000",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f": "10000",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a": "100000",
+        "attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade": "0",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f": "75000",
+        "attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4": "0",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508": "60000",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23": "100000",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4": "20000",
+        "attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9": "0",
+        "attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28": "0",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822": "20000",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c": "40000"
+      },
+      "notes": {
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f": "Fig. 4 'Cost of Attack' (leaf value): $30K",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f": "Fig. 4 'Cost of Attack' (leaf value): $10K",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a": "Fig. 4 'Cost of Attack' (leaf value): $100K",
+        "attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f": "Fig. 4 'Cost of Attack' (leaf value): $75K",
+        "attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508": "Fig. 4 'Cost of Attack' (leaf value): $60K",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23": "Fig. 4 'Cost of Attack' (leaf value): $100K",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4": "Fig. 4 'Cost of Attack' (leaf value): $20K",
+        "attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28": "AND node combine, cost 0; Fig. 4 prints Eavesdrop $60K = sum of its children",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822": "Fig. 4 'Cost of Attack' (leaf value): $20K",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c": "Fig. 4 'Cost of Attack' (leaf value): $40K"
+      },
+      "assumptions": "Leaves marked I (impossible) in Fig. 2 are disabled. The figure's dashed paths show two possible attacks: cut open safe, and bribe to learn the combo.\nSource: Schneier, B. (1999). Attack Trees. Dr. Dobb's Journal, December 1999. Public copy https://www.schneier.com/academic/archives/1999/12/attack_trees.html (fetched 2026-11-18). Used: Fig. 2 'Possible Attacks' (P/I), Fig. 3 'Special Equipment Required' (SE/NSE), Fig. 4 'Cost of Attack' ($), Fig. 6 'Cheapest Attack Requiring No Special Equipment'. The web copy has no page numbers.\nTranscription notes: Values transcribed from the figure images (GIFs) on the public page. Fig. 4 prints the root as $10K and highlights Cut Open Safe; the text says OR nodes take the cheapest child and AND nodes the sum of their children. Scenario 1 expected = paper (Fig. 4). Scenario 2: Fig. 2 gives only P/I (root P, two possible attacks: cut open safe, bribe); the cost 10000 combines Fig. 2 with Fig. 4 costs and is my computation, not printed. Scenario 3: Fig. 6 prints the root as 'NSE/$20K' and the text says the cheapest attack needing no special equipment is bribing the person who knows the combination; this matches. Fig. 3 marks all leaves (SE: Pick Lock, Cut Open Safe, Listen to Conversation; all other leaves NSE), so the scenario is complete. Modelling choices: one fact per internal node; the cost-0 'open_with_combo', 'use_combo_from_target' and 'eavesdrop_to_combo' actions only carry an OR child up to its OR parent; the witness lists them because they are needed for reachability. Fig. 5 (attacks under $100K) and Figs. 7-8 (PGP, general system) were not transcribed.",
+      "prediction": "",
+      "reviewed": true,
+      "automatic": false,
+      "joins": {}
+    },
+    {
+      "id": "448da4ea-7380-55ab-9703-097e7cff0c5f",
+      "name": "No special equipment",
+      "initialFacts": [],
+      "entryActions": [
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c"
+      ],
+      "goal": "attack-condition--bbb35c28-cd5b-5293-986b-c6f7c23bf64f",
+      "disabled": [
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822"
+      ],
+      "efforts": {
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f": "30000",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f": "10000",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a": "100000",
+        "attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade": "0",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f": "75000",
+        "attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4": "0",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508": "60000",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23": "100000",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4": "20000",
+        "attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9": "0",
+        "attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28": "0",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822": "20000",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c": "40000"
+      },
+      "notes": {
+        "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f": "Fig. 4 'Cost of Attack' (leaf value): $30K",
+        "attack-action--3461af3f-a584-5a50-9097-4a3278dc434f": "Fig. 4 'Cost of Attack' (leaf value): $10K",
+        "attack-action--8d1f0024-a5f4-5609-90c7-1fb4e03daa3a": "Fig. 4 'Cost of Attack' (leaf value): $100K",
+        "attack-action--d1c979a0-41d7-5076-b6ee-6f0ae251aade": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--75587b63-9990-560f-9580-1b37cc26fe9f": "Fig. 4 'Cost of Attack' (leaf value): $75K",
+        "attack-action--be4a8ad2-0b4a-5d77-b7ad-efcd239c22d4": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--447f7d6f-2194-554c-a056-a528de29c508": "Fig. 4 'Cost of Attack' (leaf value): $60K",
+        "attack-action--b0c60fb1-70c8-5473-bf07-a05802844c23": "Fig. 4 'Cost of Attack' (leaf value): $100K",
+        "attack-action--02571b02-401b-5d8b-bb7e-62fd8593d1c4": "Fig. 4 'Cost of Attack' (leaf value): $20K",
+        "attack-action--eba30fc7-e462-56cc-b7e3-01e4dcc03fc9": "structural edge (child OR-node fact to parent OR-node fact); not an attack step, cost 0",
+        "attack-action--b4d4c546-7653-5478-a7c3-a612fbc76e28": "AND node combine, cost 0; Fig. 4 prints Eavesdrop $60K = sum of its children",
+        "attack-action--7b4b3ee5-d812-5e46-80cd-1e92e7156822": "Fig. 4 'Cost of Attack' (leaf value): $20K",
+        "attack-action--12977d44-288e-5667-b19f-fb4cb650f71c": "Fig. 4 'Cost of Attack' (leaf value): $40K"
+      },
+      "assumptions": "Leaves marked SE (special equipment) in Fig. 3 are disabled; the attacker has no special equipment.\nSource: Schneier, B. (1999). Attack Trees. Dr. Dobb's Journal, December 1999. Public copy https://www.schneier.com/academic/archives/1999/12/attack_trees.html (fetched 2026-11-18). Used: Fig. 2 'Possible Attacks' (P/I), Fig. 3 'Special Equipment Required' (SE/NSE), Fig. 4 'Cost of Attack' ($), Fig. 6 'Cheapest Attack Requiring No Special Equipment'. The web copy has no page numbers.\nTranscription notes: Values transcribed from the figure images (GIFs) on the public page. Fig. 4 prints the root as $10K and highlights Cut Open Safe; the text says OR nodes take the cheapest child and AND nodes the sum of their children. Scenario 1 expected = paper (Fig. 4). Scenario 2: Fig. 2 gives only P/I (root P, two possible attacks: cut open safe, bribe); the cost 10000 combines Fig. 2 with Fig. 4 costs and is my computation, not printed. Scenario 3: Fig. 6 prints the root as 'NSE/$20K' and the text says the cheapest attack needing no special equipment is bribing the person who knows the combination; this matches. Fig. 3 marks all leaves (SE: Pick Lock, Cut Open Safe, Listen to Conversation; all other leaves NSE), so the scenario is complete. Modelling choices: one fact per internal node; the cost-0 'open_with_combo', 'use_combo_from_target' and 'eavesdrop_to_combo' actions only carry an OR child up to its OR parent; the witness lists them because they are needed for reachability. Fig. 5 (attacks under $100K) and Figs. 7-8 (PGP, general system) were not transcribed.",
+      "prediction": "",
+      "reviewed": true,
+      "automatic": false,
+      "joins": {}
+    }
+  ],
+  "selectedScenario": "01d070d6-2ad8-5cb3-a548-f92205788fc7",
+  "unit": "US dollars",
+  "rules": {
+    "profile": "m1a-positive-1",
+    "engineVersion": "0.5.0",
+    "semantics": [
+      "Conditions are persistent Boolean facts; there are no delete effects or negation.",
+      "AND requires all incoming inputs; OR requires at least one. Unlabelled joins use the per-scenario AND/OR choice.",
+      "An action is enabled when its inputs hold (or it is an approved entry action); executing it assumes success.",
+      "Each action executes at most once; efforts are nonnegative, additive, and shared actions are charged once.",
+      "Minimum effort is an exact search over closed active sets; limits yield an incomplete result, never a minimum or unreachability."
+    ],
+    "importDefaults": [
+      "New imports: root and declared starting conditions true; root actions allowed as entries.",
+      "New imports: unlabelled joins default to OR; missing efforts default to 1; goal = reachable node of greatest minimum dependency depth."
+    ],
+    "unit": "US dollars",
+    "limits": [
+      "2 MiB flow JSON",
+      "500 STIX objects",
+      "200 executable nodes",
+      "50 scenarios",
+      "50,000 search states",
+      "5 seconds per analysis"
+    ],
+    "sha256": "e6bd6b63eb99c3bfdfd81eb6045981511fd92906193b76bea8a0a9519396d755"
+  },
+  "view": {
+    "tab": "setup",
+    "selectedNode": "attack-action--26076791-973d-5bd7-aac6-6278f23eb63f",
+    "zoom": 0.85,
+    "history": []
+  }
+}

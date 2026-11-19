@@ -1,0 +1,116 @@
+{
+  "kind": "m1a-companion-project",
+  "version": 1,
+  "profile": "m1a-positive-1",
+  "applicationVersion": "0.5.0",
+  "sourceText": "{\n  \"type\": \"bundle\",\n  \"id\": \"bundle--d8dd1428-aaab-583e-8d6c-836e59fa46cc\",\n  \"objects\": [\n    {\n      \"type\": \"extension-definition\",\n      \"id\": \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\",\n      \"spec_version\": \"2.1\",\n      \"name\": \"Attack Flow\",\n      \"description\": \"Extends STIX 2.1 with features to create Attack Flows.\",\n      \"created\": \"2022-08-02T19:34:35.143Z\",\n      \"modified\": \"2022-08-02T19:34:35.143Z\",\n      \"created_by_ref\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"schema\": \"https://center-for-threat-informed-defense.github.io/attack-flow/stix/attack-flow-schema-2.0.0.json\",\n      \"version\": \"2.0.0\",\n      \"extension_types\": [\n        \"new-sdo\"\n      ]\n    },\n    {\n      \"type\": \"identity\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"created_by_ref\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"created\": \"2022-08-02T19:34:35.143Z\",\n      \"modified\": \"2022-08-02T19:34:35.143Z\",\n      \"name\": \"MITRE Center for Threat-Informed Defense\",\n      \"identity_class\": \"organization\"\n    },\n    {\n      \"type\": \"attack-flow\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-flow--03a8c98b-b31a-5628-8596-9136c64116b2\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"idika-bhargava-gi\"\n        }\n      ],\n      \"name\": \"Idika and Bhargava (2012) – Attack graph G(i)\",\n      \"description\": \"Course transcription for 1DT118 M1a. Source: Idika, N. and Bhargava, B. (2012). Extending Attack Graph-Based Security Metrics and Aggregating Their Application. IEEE Transactions on Dependable and Secure Computing, 9(1), 75-85. Fig. 2 'Attack Graph Gi with vulnerabilities 14 through 20' (p. 78); Table 2 (p. 84).\",\n      \"scope\": \"other\",\n      \"start_refs\": [\n        \"attack-condition--ec581738-2b02-5ce5-a128-6515dd93f7db\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--ec581738-2b02-5ce5-a128-6515dd93f7db\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"s\"\n        }\n      ],\n      \"description\": \"s: attacker initial condition\",\n      \"on_true_refs\": [\n        \"attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb\",\n        \"attack-action--25dad28a-ccfa-57c6-aa9a-f7f06eb8be9f\",\n        \"attack-action--ae2c8c9e-b475-5895-8048-09cb506a38fe\",\n        \"attack-action--a54c0c17-d8cc-58d5-a275-3aa46e77c8b3\",\n        \"attack-action--65880b10-9252-509d-8af7-939a98f96cb3\",\n        \"attack-action--8fa412fd-6543-534e-8cd9-494af28a7472\",\n        \"attack-action--f5c13709-8182-50b7-99b0-7dbfb54758da\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--d400ea19-3d4d-5abc-bfe0-3fa435b6911e\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"g\"\n        }\n      ],\n      \"description\": \"g: goal condition (security policy violated)\"\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"v14\"\n        }\n      ],\n      \"name\": \"Exploit v14\",\n      \"description\": \"path length = number of exploits (Section 3.2.1); unit cost per exploit\",\n      \"effect_refs\": [\n        \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--25dad28a-ccfa-57c6-aa9a-f7f06eb8be9f\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"v15\"\n        }\n      ],\n      \"name\": \"Exploit v15\",\n      \"description\": \"path length = number of exploits (Section 3.2.1); unit cost per exploit\",\n      \"effect_refs\": [\n        \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--ae2c8c9e-b475-5895-8048-09cb506a38fe\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"v16\"\n        }\n      ],\n      \"name\": \"Exploit v16\",\n      \"description\": \"path length = number of exploits (Section 3.2.1); unit cost per exploit\",\n      \"effect_refs\": [\n        \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--a54c0c17-d8cc-58d5-a275-3aa46e77c8b3\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"v17\"\n        }\n      ],\n      \"name\": \"Exploit v17\",\n      \"description\": \"path length = number of exploits (Section 3.2.1); unit cost per exploit\",\n      \"effect_refs\": [\n        \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--65880b10-9252-509d-8af7-939a98f96cb3\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"v18\"\n        }\n      ],\n      \"name\": \"Exploit v18\",\n      \"description\": \"path length = number of exploits (Section 3.2.1); unit cost per exploit\",\n      \"effect_refs\": [\n        \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--8fa412fd-6543-534e-8cd9-494af28a7472\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"v19\"\n        }\n      ],\n      \"name\": \"Exploit v19\",\n      \"description\": \"path length = number of exploits (Section 3.2.1); unit cost per exploit\",\n      \"effect_refs\": [\n        \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--f5c13709-8182-50b7-99b0-7dbfb54758da\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"v20\"\n        }\n      ],\n      \"name\": \"Exploit v20\",\n      \"description\": \"path length = number of exploits (Section 3.2.1); unit cost per exploit\",\n      \"effect_refs\": [\n        \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\"\n      ]\n    },\n    {\n      \"type\": \"attack-operator\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-operator--b5e3af58-2e67-59e7-b4a0-35cb1277e7ca\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"or_g\"\n        }\n      ],\n      \"operator\": \"OR\",\n      \"effect_refs\": [\n        \"attack-condition--d400ea19-3d4d-5abc-bfe0-3fa435b6911e\"\n      ]\n    }\n  ]\n}",
+  "sourceSha256": "a9d46fb1f162c0d31a3ac4bc4ea9f91e50d94af26ade638643b09f9f84df9cfb",
+  "scenarios": [
+    {
+      "id": "8af0adef-35d0-52c0-afcf-d76d584e12ea",
+      "name": "Baseline",
+      "initialFacts": [
+        "attack-condition--ec581738-2b02-5ce5-a128-6515dd93f7db"
+      ],
+      "entryActions": [],
+      "goal": "attack-condition--d400ea19-3d4d-5abc-bfe0-3fa435b6911e",
+      "disabled": [],
+      "efforts": {
+        "attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb": "1",
+        "attack-action--25dad28a-ccfa-57c6-aa9a-f7f06eb8be9f": "1",
+        "attack-action--ae2c8c9e-b475-5895-8048-09cb506a38fe": "1",
+        "attack-action--a54c0c17-d8cc-58d5-a275-3aa46e77c8b3": "1",
+        "attack-action--65880b10-9252-509d-8af7-939a98f96cb3": "1",
+        "attack-action--8fa412fd-6543-534e-8cd9-494af28a7472": "1",
+        "attack-action--f5c13709-8182-50b7-99b0-7dbfb54758da": "1"
+      },
+      "notes": {
+        "attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--25dad28a-ccfa-57c6-aa9a-f7f06eb8be9f": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--ae2c8c9e-b475-5895-8048-09cb506a38fe": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--a54c0c17-d8cc-58d5-a275-3aa46e77c8b3": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--65880b10-9252-509d-8af7-939a98f96cb3": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--8fa412fd-6543-534e-8cd9-494af28a7472": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--f5c13709-8182-50b7-99b0-7dbfb54758da": "path length = number of exploits (Section 3.2.1); unit cost per exploit"
+      },
+      "assumptions": "The attacker starts with condition s only.\nSource: Idika, N. and Bhargava, B. (2012). Extending Attack Graph-Based Security Metrics and Aggregating Their Application. IEEE Transactions on Dependable and Secure Computing, 9(1), 75-85. Fig. 2 'Attack Graph Gi with vulnerabilities 14 through 20' (p. 78); Table 2 (p. 84).\nTranscription notes: Edges (all clearly drawn): s -> v_i -> g for i = 14..20. Seven s-g paths, each of length 1 exploit. Path metrics from this transcription: SP 1, NP 7, MPL 1, SDPL 0, mode 1, median 1, NMPL 1/7 = 0.143. Table 2 prints SP 1, NP 7, MPL 1, NMPL 0.14, SDPL 0, MoPL 1, MePL 1, so they agree. Baseline minimum cost 1 = the paper's SP(Gi) = 1 (p. 78). Seven witnesses tie (any single v14..v20); v14 is listed. The second scenario is my own what-if.",
+      "prediction": "",
+      "reviewed": true,
+      "automatic": false,
+      "joins": {}
+    },
+    {
+      "id": "713f3d9f-e135-5a4e-8513-d501b8cd2dbc",
+      "name": "Six of seven exploits patched",
+      "initialFacts": [
+        "attack-condition--ec581738-2b02-5ce5-a128-6515dd93f7db"
+      ],
+      "entryActions": [],
+      "goal": "attack-condition--d400ea19-3d4d-5abc-bfe0-3fa435b6911e",
+      "disabled": [
+        "attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb",
+        "attack-action--25dad28a-ccfa-57c6-aa9a-f7f06eb8be9f",
+        "attack-action--ae2c8c9e-b475-5895-8048-09cb506a38fe",
+        "attack-action--a54c0c17-d8cc-58d5-a275-3aa46e77c8b3",
+        "attack-action--65880b10-9252-509d-8af7-939a98f96cb3",
+        "attack-action--8fa412fd-6543-534e-8cd9-494af28a7472"
+      ],
+      "efforts": {
+        "attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb": "1",
+        "attack-action--25dad28a-ccfa-57c6-aa9a-f7f06eb8be9f": "1",
+        "attack-action--ae2c8c9e-b475-5895-8048-09cb506a38fe": "1",
+        "attack-action--a54c0c17-d8cc-58d5-a275-3aa46e77c8b3": "1",
+        "attack-action--65880b10-9252-509d-8af7-939a98f96cb3": "1",
+        "attack-action--8fa412fd-6543-534e-8cd9-494af28a7472": "1",
+        "attack-action--f5c13709-8182-50b7-99b0-7dbfb54758da": "1"
+      },
+      "notes": {
+        "attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--25dad28a-ccfa-57c6-aa9a-f7f06eb8be9f": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--ae2c8c9e-b475-5895-8048-09cb506a38fe": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--a54c0c17-d8cc-58d5-a275-3aa46e77c8b3": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--65880b10-9252-509d-8af7-939a98f96cb3": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--8fa412fd-6543-534e-8cd9-494af28a7472": "path length = number of exploits (Section 3.2.1); unit cost per exploit",
+        "attack-action--f5c13709-8182-50b7-99b0-7dbfb54758da": "path length = number of exploits (Section 3.2.1); unit cost per exploit"
+      },
+      "assumptions": "What-if (not in the paper): all exploits except v20 removed; SP is unchanged.\nSource: Idika, N. and Bhargava, B. (2012). Extending Attack Graph-Based Security Metrics and Aggregating Their Application. IEEE Transactions on Dependable and Secure Computing, 9(1), 75-85. Fig. 2 'Attack Graph Gi with vulnerabilities 14 through 20' (p. 78); Table 2 (p. 84).\nTranscription notes: Edges (all clearly drawn): s -> v_i -> g for i = 14..20. Seven s-g paths, each of length 1 exploit. Path metrics from this transcription: SP 1, NP 7, MPL 1, SDPL 0, mode 1, median 1, NMPL 1/7 = 0.143. Table 2 prints SP 1, NP 7, MPL 1, NMPL 0.14, SDPL 0, MoPL 1, MePL 1, so they agree. Baseline minimum cost 1 = the paper's SP(Gi) = 1 (p. 78). Seven witnesses tie (any single v14..v20); v14 is listed. The second scenario is my own what-if.",
+      "prediction": "",
+      "reviewed": true,
+      "automatic": false,
+      "joins": {}
+    }
+  ],
+  "selectedScenario": "8af0adef-35d0-52c0-afcf-d76d584e12ea",
+  "unit": "exploits",
+  "rules": {
+    "profile": "m1a-positive-1",
+    "engineVersion": "0.5.0",
+    "semantics": [
+      "Conditions are persistent Boolean facts; there are no delete effects or negation.",
+      "AND requires all incoming inputs; OR requires at least one. Unlabelled joins use the per-scenario AND/OR choice.",
+      "An action is enabled when its inputs hold (or it is an approved entry action); executing it assumes success.",
+      "Each action executes at most once; efforts are nonnegative, additive, and shared actions are charged once.",
+      "Minimum effort is an exact search over closed active sets; limits yield an incomplete result, never a minimum or unreachability."
+    ],
+    "importDefaults": [
+      "New imports: root and declared starting conditions true; root actions allowed as entries.",
+      "New imports: unlabelled joins default to OR; missing efforts default to 1; goal = reachable node of greatest minimum dependency depth."
+    ],
+    "unit": "exploits",
+    "limits": [
+      "2 MiB flow JSON",
+      "500 STIX objects",
+      "200 executable nodes",
+      "50 scenarios",
+      "50,000 search states",
+      "5 seconds per analysis"
+    ],
+    "sha256": "d3a016dcd613cf08abed0446b494a4acf631d68a297ee1b696e443b25e1fe356"
+  },
+  "view": {
+    "tab": "setup",
+    "selectedNode": "attack-action--5009096b-2c26-5ef9-b910-c1ca6ab022fb",
+    "zoom": 0.85,
+    "history": []
+  }
+}

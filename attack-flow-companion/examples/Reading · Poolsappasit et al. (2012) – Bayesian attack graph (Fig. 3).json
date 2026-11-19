@@ -1,0 +1,83 @@
+{
+  "kind": "m1a-companion-project",
+  "version": 1,
+  "profile": "m1a-positive-1",
+  "applicationVersion": "0.5.0",
+  "sourceText": "{\n  \"type\": \"bundle\",\n  \"id\": \"bundle--271efe8c-cff6-57d5-9908-aef494c19fac\",\n  \"objects\": [\n    {\n      \"type\": \"extension-definition\",\n      \"id\": \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\",\n      \"spec_version\": \"2.1\",\n      \"name\": \"Attack Flow\",\n      \"description\": \"Extends STIX 2.1 with features to create Attack Flows.\",\n      \"created\": \"2022-08-02T19:34:35.143Z\",\n      \"modified\": \"2022-08-02T19:34:35.143Z\",\n      \"created_by_ref\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"schema\": \"https://center-for-threat-informed-defense.github.io/attack-flow/stix/attack-flow-schema-2.0.0.json\",\n      \"version\": \"2.0.0\",\n      \"extension_types\": [\n        \"new-sdo\"\n      ]\n    },\n    {\n      \"type\": \"identity\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"created_by_ref\": \"identity--d673f8cb-c168-42da-8ed4-0cb26725f86c\",\n      \"created\": \"2022-08-02T19:34:35.143Z\",\n      \"modified\": \"2022-08-02T19:34:35.143Z\",\n      \"name\": \"MITRE Center for Threat-Informed Defense\",\n      \"identity_class\": \"organization\"\n    },\n    {\n      \"type\": \"attack-flow\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-flow--48a7de54-aa95-584b-b2a1-f5b1a8d7cd36\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"poolsappasit-fig3\"\n        }\n      ],\n      \"name\": \"Poolsappasit et al. (2012) – Bayesian attack graph (Fig. 3)\",\n      \"description\": \"Course transcription for 1DT118 M1a. Source: Poolsappasit, Dewri and Ray (2012), Dynamic security risk management using Bayesian attack graphs, IEEE TDSC 9(1), Fig. 3 (p.5) and §4.4. Reported: Pr(A) = 0.6060; Pr(C | A) = 0.81.\",\n      \"scope\": \"other\",\n      \"start_refs\": [\n        \"attack-condition--a1250a3c-557c-54e6-8694-9add1900ce24\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--a1250a3c-557c-54e6-8694-9add1900ce24\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"D\"\n        }\n      ],\n      \"description\": \"D: remote attacker\",\n      \"on_true_refs\": [\n        \"attack-action--4c560d0d-380b-511a-9a61-65ece7c91287\",\n        \"attack-action--07c5ce12-51dd-57da-9701-99443133cf7b\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--8595e40e-756f-59e4-b61b-45459b735f87\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"B\"\n        }\n      ],\n      \"description\": \"B: user access on FTP server (Matu FTP BOF)\",\n      \"on_true_refs\": [\n        \"attack-action--8b734c80-3c52-5286-af85-2b4559df8d07\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--2323cc84-6614-5456-a0c7-f60aad457bd4\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"C\"\n        }\n      ],\n      \"description\": \"C: user access via remote SSH BOF\",\n      \"on_true_refs\": [\n        \"attack-action--26cc9cc9-6668-5b12-89c0-f098036cf6fd\"\n      ]\n    },\n    {\n      \"type\": \"attack-condition\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-condition--27468d8b-c0b5-5309-a928-e3f4f5c36439\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"A\"\n        }\n      ],\n      \"description\": \"A: root access on FTP server\"\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--4c560d0d-380b-511a-9a61-65ece7c91287\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"ftp_bof\"\n        }\n      ],\n      \"name\": \"Matu FTP buffer overflow (D→B)\",\n      \"description\": \"Fig. 3 edge probability 0.85; cost illustrative\",\n      \"effect_refs\": [\n        \"attack-condition--8595e40e-756f-59e4-b61b-45459b735f87\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--07c5ce12-51dd-57da-9701-99443133cf7b\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"ssh_bof\"\n        }\n      ],\n      \"name\": \"Remote SSH buffer overflow (D→C)\",\n      \"description\": \"Fig. 3 edge probability 0.70; cost illustrative\",\n      \"effect_refs\": [\n        \"attack-condition--2323cc84-6614-5456-a0c7-f60aad457bd4\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--8b734c80-3c52-5286-af85-2b4559df8d07\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"b_to_a\"\n        }\n      ],\n      \"name\": \"Local escalation (B→A)\",\n      \"description\": \"Fig. 3 edge probability 0.65; cost illustrative\",\n      \"effect_refs\": [\n        \"attack-operator--f22bb622-c9ca-586b-ba20-b8f402a6cea6\"\n      ]\n    },\n    {\n      \"type\": \"attack-action\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-action--26cc9cc9-6668-5b12-89c0-f098036cf6fd\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"c_to_a\"\n        }\n      ],\n      \"name\": \"Escalation (C→A)\",\n      \"description\": \"Fig. 3 edge probability 1.00; cost illustrative\",\n      \"effect_refs\": [\n        \"attack-operator--f22bb622-c9ca-586b-ba20-b8f402a6cea6\"\n      ]\n    },\n    {\n      \"type\": \"attack-operator\",\n      \"spec_version\": \"2.1\",\n      \"id\": \"attack-operator--f22bb622-c9ca-586b-ba20-b8f402a6cea6\",\n      \"created\": \"2026-11-18T12:00:00.000Z\",\n      \"modified\": \"2026-11-18T12:00:00.000Z\",\n      \"extensions\": {\n        \"extension-definition--fb9c968a-745b-4ade-9b25-c324172197f4\": {\n          \"extension_type\": \"new-sdo\"\n        }\n      },\n      \"external_references\": [\n        {\n          \"source_name\": \"1DT118-M1a\",\n          \"external_id\": \"or_A\"\n        }\n      ],\n      \"operator\": \"OR\",\n      \"effect_refs\": [\n        \"attack-condition--27468d8b-c0b5-5309-a928-e3f4f5c36439\"\n      ]\n    }\n  ]\n}",
+  "sourceSha256": "80993a28e6345cb8f4acb56c7dd9ae2062844f944585a621c8f0659c29e55dc6",
+  "scenarios": [
+    {
+      "id": "e9411b6d-9666-543a-8d80-b24a859e1045",
+      "name": "Fig. 3 probabilities",
+      "initialFacts": [
+        "attack-condition--a1250a3c-557c-54e6-8694-9add1900ce24"
+      ],
+      "entryActions": [],
+      "goal": "attack-condition--27468d8b-c0b5-5309-a928-e3f4f5c36439",
+      "disabled": [],
+      "efforts": {
+        "attack-action--4c560d0d-380b-511a-9a61-65ece7c91287": "1",
+        "attack-action--07c5ce12-51dd-57da-9701-99443133cf7b": "1",
+        "attack-action--8b734c80-3c52-5286-af85-2b4559df8d07": "1",
+        "attack-action--26cc9cc9-6668-5b12-89c0-f098036cf6fd": "1"
+      },
+      "notes": {
+        "attack-action--4c560d0d-380b-511a-9a61-65ece7c91287": "Fig. 3 edge probability 0.85; cost illustrative",
+        "attack-action--07c5ce12-51dd-57da-9701-99443133cf7b": "Fig. 3 edge probability 0.70; cost illustrative",
+        "attack-action--8b734c80-3c52-5286-af85-2b4559df8d07": "Fig. 3 edge probability 0.65; cost illustrative",
+        "attack-action--26cc9cc9-6668-5b12-89c0-f098036cf6fd": "Fig. 3 edge probability 1.00; cost illustrative"
+      },
+      "assumptions": "Prior Pr(D) = 0.70 and edge probabilities from Fig. 3, read with the course semantics m1a-static-opportunity-1 (each step attempted once, independent). Effort costs are illustrative and unrelated to the probabilities.\nSource: Poolsappasit, Dewri and Ray (2012), Dynamic security risk management using Bayesian attack graphs, IEEE TDSC 9(1), Fig. 3 (p.5) and §4.4. Reported: Pr(A) = 0.6060; Pr(C | A) = 0.81.\nTranscription notes: The paper derives edge probabilities from CVSS scores (Eq. 4.1); they are not calibrated success rates. The course semantics reproduce the paper's Pr(A) = 0.6060 and Pr(C | A) = 0.81 because D is shared and A is a noisy-OR of B and C.",
+      "prediction": "",
+      "reviewed": true,
+      "automatic": false,
+      "joins": {},
+      "probabilities": {
+        "attack-action--4c560d0d-380b-511a-9a61-65ece7c91287": "0.85",
+        "attack-action--07c5ce12-51dd-57da-9701-99443133cf7b": "0.7",
+        "attack-action--8b734c80-3c52-5286-af85-2b4559df8d07": "0.65",
+        "attack-action--26cc9cc9-6668-5b12-89c0-f098036cf6fd": "1"
+      },
+      "priors": {
+        "attack-condition--a1250a3c-557c-54e6-8694-9add1900ce24": "0.7"
+      }
+    }
+  ],
+  "selectedScenario": "e9411b6d-9666-543a-8d80-b24a859e1045",
+  "unit": "attack steps (illustrative)",
+  "advanced": {
+    "probability": true
+  },
+  "rules": {
+    "profile": "m1a-positive-1",
+    "engineVersion": "0.5.0",
+    "semantics": [
+      "Conditions are persistent Boolean facts; there are no delete effects or negation.",
+      "AND requires all incoming inputs; OR requires at least one. Unlabelled joins use the per-scenario AND/OR choice.",
+      "An action is enabled when its inputs hold (or it is an approved entry action); executing it assumes success.",
+      "Each action executes at most once; efforts are nonnegative, additive, and shared actions are charged once.",
+      "Minimum effort is an exact search over closed active sets; limits yield an incomplete result, never a minimum or unreachability."
+    ],
+    "importDefaults": [
+      "New imports: root and declared starting conditions true; root actions allowed as entries.",
+      "New imports: unlabelled joins default to OR; missing efforts default to 1; goal = reachable node of greatest minimum dependency depth."
+    ],
+    "unit": "attack steps (illustrative)",
+    "limits": [
+      "2 MiB flow JSON",
+      "500 STIX objects",
+      "200 executable nodes",
+      "50 scenarios",
+      "50,000 search states",
+      "5 seconds per analysis"
+    ],
+    "probabilitySemantics": "m1a-static-opportunity-1: each action with probability p is attempted once when enabled and succeeds independently; initial facts with a prior hold independently; AND/OR deterministic; evidence conditions the final closure; never combined with effort.",
+    "sha256": "cf3ad7a4aaeffa8dbc84c61f3678a4f2b8dfe579b63369a86e79c33addab95cf"
+  },
+  "view": {
+    "tab": "setup",
+    "selectedNode": "attack-action--4c560d0d-380b-511a-9a61-65ece7c91287",
+    "zoom": 0.85,
+    "history": []
+  }
+}

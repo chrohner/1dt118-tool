@@ -1,9 +1,9 @@
 {
   "sourceRepository": "https://github.com/uu-core/uu-1dt118",
   "sourceDirectory": "tools/attack-flow-companion",
-  "sourceCommit": "883b4eee631244a19da6712e83ef4d973209d20f",
+  "sourceCommit": "7ca9117caa44ef6c9caae8d7b2518239b6ecb92a",
   "sourceDirty": false,
   "sourceStatus": null,
-  "version": "0.3.0",
-  "builtAt": "2026-11-12T13:41:18.216Z"
+  "version": "0.5.0",
+  "builtAt": "2026-11-19T07:47:14.213Z"
 }
